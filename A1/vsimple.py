@@ -1,4 +1,4 @@
-
+#!/usr/bin/python
 
 # import the pygame module, so you can use it
 import pickle,pygame,sys

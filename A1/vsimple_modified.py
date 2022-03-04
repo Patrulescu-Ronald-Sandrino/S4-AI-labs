@@ -7,6 +7,7 @@ from random import random, randint
 import numpy as np
 
 import time as tm
+import os
 
 
 #Creating some colors
@@ -44,6 +45,14 @@ class Environment():
         for i in range(self.__n):
             for j in range(self.__m):
                 string = string + str(int(self.__surface[i][j]))
+            string = string + "\n"
+        return string[:-1]
+
+    def str2(self):
+        string = ""
+        for i in range(self.__n):
+            for j in range(self.__m):
+                string = string + "e[" + str(i) + "][" + str(j) + "] = " + str(int(self.__surface[i][j])) + "\n"
             string = string + "\n"
         return string
                 
@@ -105,7 +114,7 @@ class DMap():
         self.surface = np.zeros((self.__n, self.__m))
         for i in range(self.__n):
             for j in range(self.__m):
-                self.surface[i][j] = -1
+                self.surface[i][j] = valueOfUnexploredCell
         
         
     def markDetectedWalls(self, e, x, y):
@@ -165,6 +174,14 @@ class DMap():
         drona = pygame.image.load("drona.png")
         imagine.blit(drona, (y *20, x*20))
         return imagine
+
+    def __str__(self):
+        string=""
+        for i in range(self.__n):
+            for j in range(self.__m):
+                string = string + str(int(self.surface[i][j]))
+            string = string + "\n"
+        return string[:-1]
         
         
 class Drone():
@@ -194,48 +211,108 @@ class Drone():
          # mapping with DFS           
         # start
 
-        """
-        bool DFS(elem, list) {
-            found = false;
-            visited = {};
-            toVisit = {start}; // LIFO list
-            while (toVisit != {} and not found) {
-                node = pop(toVisit);
-                visited = visited U {node};
-                if (node == elem) {
-                    found = true;
-                }
-                else {
-                aux = {};
-                for all (unvisited) children of node do {
-                    aux = aux U {child};
-                }
-                toVisit = aux U toVisit
-            }
-            return found
-        }
+        is1DPositionValid = lambda value: 0 <= value <= 19
+        is2DPositionValid = lambda x, y: is1DPositionValid(x) and is1DPositionValid(y)
+        def isChildValid(x, y):
+            return is2DPositionValid(x, y)
+        is2DPositionOnEdge = lambda x, y: x in [0, 19] or y in [0, 19]
+        shouldSkip2DPosition = lambda x, y: is2DPositionOnEdge(x, y) and detectedMap.surface[x][y] == 0
+
+        def getValidNext2DPositions(x, y):
+            result = []
+
+            for (delta_x, delta_y) in v:
+                next2DPosition = (x + delta_x, y + delta_y)
+
+                if is2DPositionValid(*next2DPosition):
+                    result.append(next2DPosition)
+
+            return result
+
+
 
         """
-        # for every NSEW neighbor, we find if it has an unvisited neighoboor
-        in_range = lambda var: 0 < var < 19
+        depth >= 0
+
+        call with: distanceToClosestUnexplored((x, y) + dir, depth, dir)
+        """
+        def distanceToClosestUnexplored(x, y, depth, direction_from_source=None):
+            if depth < 0:
+                return -1
+            if detectedMap.surface[x][y] == valueOfUnexploredCell:
+                return 0
+
+            minimumDistance = float('+inf')
+            for direction in DIRECTIONS:
+                if direction = INVERSE[direction_from_source]:
+                    continue
+                [dx, dy] = direction
+                next2DPosition = (x + dx, y + dy)
+                if not is2DPositionValid(*next2DPosition):
+                    continue
+
+                minimumDistance = min(minimumDistance, 1 + distanceToClosestUnexplored(x + dx, y + dy, depth - 1, direction))
+            return minimumDistance
+
 
         found = False
         visited = {}
-        toVisit = {(self.x, self.y): 1}
+        toVisit = [(self.x, self.y)]
+        detectedMap.surface[self.x][self.y] = 0 # <-- very bad without (x, y) != (self.x, self.y) condition
 
         while not found and len(toVisit) > 0:
-            ((x, y), _) = toVisit.popitem()
+            (x, y) = toVisit.pop(0)
             visited[(x, y)] = 1
 
-            if detectedMap.surface[x][y] == 0: # NOTE: only valid positions should be added
-                found = true
+            if debug:
+                print("(self.x, self.y) = ", (self.x, self.y))
+                print("(x,y) = ", (x, y))
+                print("toVisit = ", toVisit)
+                print(str(detectedMap))
+
+            if detectedMap.surface[x][y] == 0 and (x, y) != (self.x, self.y): # to avoid going back were we started
+                self.x, self.y = x, y
+                if debug:
+                    print("found ", (x, y), '\n')
+                found = True # or just: return
             else:
-                pass # TODO
-                
-        self.x, self.y = x, y
+                unvisitedChildren = []
 
+                for direction in DIRECTIONS:
+                    [dx, dy] = direction
+                    child =  (x + dx, y + dy)
+                    
+                    if child in visited:
+                        continue
+                    if not isChildValid(*child): # only valid positions inside the map should be added
+                        continue
+                    # if shouldSkip2DPosition(*child):
+                    #    continue
 
+                    if CHILD_GENERATOR_VERSION == 1:
+                        unvisitedChildren.append(child)
+                    elif CHILD_GENERATOR_VERSION == 2:
+                        currentDistance = distanceToClosestUnexplored(*child, DEPTH, direction)
+                        # TODO: add to unvisitedChildren, ordered by distanceToClosestUnexplored
+                    else:
+                        print('Drone.moveDFS() Error: CHILD_GENERATOR_VERSION not reconized')
+                        os._exit(1)
+
+                toVisit = unvisitedChildren + toVisit
         
+debug = True
+valueOfUnexploredCell = 7 # TODO: change back to -1 when done with debug printing
+moved = 0
+sleepTime = 1
+DIRECTIONS = [[-1, 0], [0, 1], [1, 0], [0, -1]] # LEFT UP RIGHT DOWN
+INVERSE = {}
+INVERSE[[-1, 0]] = [1, 0]
+INVERSE[[1, 0]] = [-1, 0]
+INVERSE[[0, 1]] = [0, -1]
+INVERSE[[0, -1]] = [0, 1]
+DEPTH = 20
+CHILD_GENERATOR_VERSION = 2
+
                   
 # define a main function
 def main():
@@ -265,7 +342,10 @@ def main():
     d = Drone(x, y)
     
     
-    
+    if debug:
+        print("Drone starts at ", (x, y))
+        print("Map is")
+        print(str(e))
     # create a surface on screen that has the size of 800 x 480
     screen = pygame.display.set_mode((800,400))
     screen.fill(WHITE)
@@ -286,11 +366,22 @@ def main():
                 # use this function instead of move
                 #d.move(m)
             else:
+                """
                 d.moveDSF(m)
-                tm.sleep(0.1)
+                print("moved")
+                tm.sleep(10)
+                """
+
         m.markDetectedWalls(e, d.x, d.y)
         screen.blit(m.image(d.x,d.y),(400,0))
         pygame.display.flip()
+
+        d.moveDSF(m)
+        global moved
+        moved += 1
+        if debug:
+            print("moved", moved, "times")
+        tm.sleep(sleepTime)
 
        
     pygame.quit()

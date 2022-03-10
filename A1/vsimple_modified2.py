@@ -225,10 +225,10 @@ class Drone(): # {{{
         drone_position = (self.x, self.y)
         found = False
         visited = {}
-        toVisit = [drone_position]
+        self.toVisit = [drone_position] + self.toVisit
 
-        while len(toVisit) > 0 and not found:
-            node = (x, y) = toVisit.pop(0)
+        while len(self.toVisit) > 0 and not found:
+            node = (x, y) = self.toVisit.pop(0)
             visited[node] = 1
             self.visited[node] = 1
 
@@ -236,7 +236,7 @@ class Drone(): # {{{
                 print("-" * 20, "Drone.moveDFS()")
                 print("(self.x, self.y) = ", (self.x, self.y))
                 print("(x, y) = ", (x, y))
-                print("toVisit = ", toVisit)
+                print("toVisit = ", self.toVisit)
                 print(str(detectedMap))
                 print()
 
@@ -246,6 +246,7 @@ class Drone(): # {{{
                     print("-" * 20, '\n')
                 self.x, self.y = x, y
                 found = True
+                return
             else:
                 children = []
 
@@ -261,7 +262,8 @@ class Drone(): # {{{
 
                     children.append(child)
                 
-                toVisit = children + toVisit
+                self.toVisit = children + self.toVisit
+            self.x, self.y = None, None
     # }}}
 
 # }}}
@@ -272,11 +274,20 @@ DIRECTIONS = [[0, 1], [1, 0], [0, -1], [-1, 0]]
 debug = True
 valueOfUnexploredCell = 7 # TODO: change back to -1 when done with debug printing
 moved = 0
-sleepTime = 1
+sleepTime = 0
 # }}}
 
-# run with: clear; ./vsimple_modified2.py
-                  
+"""
+run with: clear; ./vsimple_modified2.py
+
+Questions:
+    1. Can it be done with function local toVisit and visited?
+
+TODO
+1. Fix stopping
+2. Fix teleportation
+
+"""
 # define a main function
 def main(): # {{{
     #we create the environment
@@ -337,7 +348,9 @@ def main(): # {{{
                 print("moved")
                 tm.sleep(10)
                 """
-
+        if (d.x, d.y) == (None, None):
+            print("It stopped")
+            continue
         m.markDetectedWalls(e, d.x, d.y)
         screen.blit(m.image(d.x,d.y),(400,0))
         pygame.display.flip()

@@ -330,6 +330,7 @@ def main(): # {{{
     
     # define a variable to control the main loop
     running = True
+    itStopped = False
      
     # main loop
     while running:
@@ -349,7 +350,9 @@ def main(): # {{{
                 tm.sleep(10)
                 """
         if (d.x, d.y) == (None, None):
-            print("It stopped")
+            if not itStopped:
+                itStopped = True
+                print("It stopped")
             continue
         m.markDetectedWalls(e, d.x, d.y)
         screen.blit(m.image(d.x,d.y),(400,0))

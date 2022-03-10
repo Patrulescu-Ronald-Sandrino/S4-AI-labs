@@ -194,6 +194,8 @@ class Drone(): # {{{
     def __init__(self, x, y): # {{{
         self.x = x
         self.y = y
+        self.toVisit = []
+        self.visited = {}
     # }}}
     
     def move(self, detectedMap): # {{{
@@ -228,6 +230,7 @@ class Drone(): # {{{
         while len(toVisit) > 0 and not found:
             node = (x, y) = toVisit.pop(0)
             visited[node] = 1
+            self.visited[node] = 1
 
             if debug:
                 print("-" * 20, "Drone.moveDFS()")
@@ -246,14 +249,14 @@ class Drone(): # {{{
             else:
                 children = []
 
-                for direction in v:
+                for direction in DIRECTIONS:
                     [dx, dy] = direction
                     child = (child_x, child_y) = (x + dx, y + dy)
 
                     """conditions checking"""
                     if not is2DPositionInMapRange(child_x, child_y):
                         continue
-                    if child in visited:
+                    if child in visited or child in self.visited:
                         continue
 
                     children.append(child)
@@ -265,12 +268,14 @@ class Drone(): # {{{
 
 
 # ~CONSTANTS {{{
+DIRECTIONS = [[0, 1], [1, 0], [0, -1], [-1, 0]]
 debug = True
 valueOfUnexploredCell = 7 # TODO: change back to -1 when done with debug printing
 moved = 0
 sleepTime = 1
 # }}}
 
+# run with: clear; ./vsimple_modified2.py
                   
 # define a main function
 def main(): # {{{

@@ -216,54 +216,36 @@ class Drone(): # {{{
     # }}}
                   
     def moveDSF(self, detectedMap): # {{{
-         # TO DO!
+        # TO DO!
          #rewrite this function in such a way that you perform an automatic 
          # mapping with DFS
         is1DPositionInMapRange = lambda x: 0 <= x <= 19
         is2DPositionInMapRange = lambda x, y: is1DPositionInMapRange(x) and is1DPositionInMapRange(y)
         isDiscovered = lambda x, y: detectedMap.surface[x][y] == 0 
 
-        found = False
-        self.toVisit = [(self.x, self.y)] + self.toVisit
+        self.visited[(self.x, self.y)] = 1
 
-        while len(self.toVisit) > 0 and not found:
-            node = (x, y) = self.toVisit.pop(0)
-            self.visited[node] = 1
+        children = []
+        for direction in DIRECTIONS:
+            [dx, dy] = direction
+            child = (self.x + dx, self.y + dy)
+            if not is2DPositionInMapRange(*child):
+                continue
+            if child in self.visited:
+                continue
+            if not isDiscovered(*child):
+                continue
+            children.append(child)
 
-            if debug:
-                print("-" * 20, "Drone.moveDFS()")
-                print("(self.x, self.y) = ", (self.x, self.y))
-                print("(x, y) = ", (x, y))
-                print("toVisit = ", self.toVisit)
-                print(str(detectedMap))
-                print()
-
-            if isDiscovered(*node) and node != (self.x, self.y): # TODO: write this condition (maybe: if detectedMap.surface[x][y] == 0)
-                if debug:
-                    print("found: ", (x, y))
-                    print("-" * 20, '\n')
-                self.x, self.y = x, y
-                found = True
+        if len(children) == 0:
+            last = self.toVisit.pop(0)
+            (self.x, self.y) = last
+            if len(self.toVisit) == 0:
+                self.x = self.y = None
                 return
-            else:
-                children = []
-
-                for direction in DIRECTIONS:
-                    [dx, dy] = direction
-                    child = (child_x, child_y) = (x + dx, y + dy)
-
-                    """conditions checking"""
-                    if not is2DPositionInMapRange(child_x, child_y):
-                        continue
-                    if child in self.visited:
-                        continue
-                    if not isDiscovered(*child):
-                        continue
-
-                    children.append(child)
-                
-                self.toVisit = children + self.toVisit
-            self.x, self.y = None, None
+        else:
+            self.toVisit = children + self.toVisit
+            (self.x, self.y) = self.toVisit[0]
     # }}}
 
 # }}}
@@ -272,20 +254,13 @@ class Drone(): # {{{
 # ~CONSTANTS {{{
 DIRECTIONS = [[0, 1], [1, 0], [0, -1], [-1, 0]]
 debug = True
-valueOfUnexploredCell = 7 # TODO: change back to -1 when done with debug printing
+valueOfUnexploredCell = 7  # TODO: change back to -1 when done with debug printing
 moved = 0
-sleepTime = 0
+sleepTime = 1
 # }}}
 
 """
-run with: clear; ./vsimple_modified2.py
-
-Questions:
-    1. Can it be done with function local toVisit and visited?
-
-TODO
-1. Fix stopping
-2. Fix teleportation
+run with: clear; ./vsimple_modified4.py
 
 """
 # define a main function

@@ -222,12 +222,15 @@ class Drone(): # {{{
         is1DPositionInMapRange = lambda x: 0 <= x <= 19
         is2DPositionInMapRange = lambda x, y: is1DPositionInMapRange(x) and is1DPositionInMapRange(y)
         isDiscovered = lambda x, y: detectedMap.surface[x][y] == 0 
+        drone_position = (self.x, self.y)
 
-        found = False
-        self.toVisit = [(self.x, self.y)] + self.toVisit
+        visited = {}
+        self.toVisit = [drone_position] + self.toVisit
 
-        while len(self.toVisit) > 0 and not found:
+
+        if len(self.toVisit) > 0:
             node = (x, y) = self.toVisit.pop(0)
+            visited[node] = 1
             self.visited[node] = 1
 
             if debug:
@@ -255,7 +258,7 @@ class Drone(): # {{{
                     """conditions checking"""
                     if not is2DPositionInMapRange(child_x, child_y):
                         continue
-                    if child in self.visited:
+                    if child in visited or child in self.visited:
                         continue
                     if not isDiscovered(*child):
                         continue
@@ -274,7 +277,7 @@ DIRECTIONS = [[0, 1], [1, 0], [0, -1], [-1, 0]]
 debug = True
 valueOfUnexploredCell = 7 # TODO: change back to -1 when done with debug printing
 moved = 0
-sleepTime = 0
+sleepTime = 0.1
 # }}}
 
 """

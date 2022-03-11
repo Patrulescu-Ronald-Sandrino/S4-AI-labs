@@ -259,6 +259,8 @@ class Drone(): # {{{
                         continue
                     if child in visited or child in self.visited:
                         continue
+                    if not isDiscovered(*child):
+                        continue
 
                     children.append(child)
                 

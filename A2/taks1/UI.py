@@ -1,6 +1,6 @@
 import pygame
 
-from controller import Controller
+from Controller import Controller
 from domain.constants import WHITE, MAP_WIDTH, PATH_GENERATION_STEPS, MAP, COLOR_PAIRS
 
 

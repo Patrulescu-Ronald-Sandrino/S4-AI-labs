@@ -59,6 +59,9 @@ class Map:
         """
         return randint(0, self.n - 1), randint(0, self.m - 1)
 
+    def is_position_valid(self, x, y):
+        return 0 <= x < self.n and 0 <= y < self.m
+
     @staticmethod
     def is_cell_value_valid(value) -> bool:
         return value in [0, 1]

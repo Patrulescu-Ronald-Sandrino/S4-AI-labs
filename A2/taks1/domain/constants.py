@@ -18,8 +18,8 @@ DOWN = 2
 LEFT = 1
 RIGHT = 3
 
-# define indexes variations
-v = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+# define indexes variations: LEFT, RIGHT, UP, DOWN
+DIRECTIONS = [[-1, 0], [1, 0], [0, 1], [0, -1]]
 
 
 MAP_WIDTH = 400

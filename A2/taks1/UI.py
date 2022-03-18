@@ -1,7 +1,7 @@
 import pygame
 
 from Controller import Controller
-from domain.PathSearcher import PathSearcherDummy, PathSearcher, PathSearcherGreedy
+from domain.PathSearcher import PathSearcherDummy, PathSearcher, PathSearcherGreedy, PathSearcherAStar
 from domain.constants import WHITE, MAP_WIDTH, PATH_GENERATION_STEPS, MAP, COLOR_PAIRS
 
 
@@ -31,7 +31,8 @@ class UI:
 
             caller = self.__controller.search_path_v1
         else:
-            algorithms = [PathSearcherDummy, PathSearcherGreedy, PathSearcherDummy]
+            algorithms = [PathSearcherDummy, PathSearcherGreedy, PathSearcherAStar]
+            # algorithms = [PathSearcherDummy, PathSearcherGreedy]
 
             def algorithm_name(x: PathSearcher):
                 return x.get_name()

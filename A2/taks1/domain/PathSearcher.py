@@ -23,7 +23,8 @@ class PathSearcher:
         self._time = -1
 
     @staticmethod
-    def previous_dictionary_to_path(previous: Dict[Tuple[int, int], Tuple[int, int]], final_x: int, final_y: int) -> List[Tuple[int, int]]:
+    def previous_dictionary_to_path(previous: Dict[Tuple[int, int], Tuple[int, int]], final_x: int, final_y: int) -> \
+            List[Tuple[int, int]]:
         reversed_path = []
         current = final_x, final_y
 
@@ -38,7 +39,7 @@ class PathSearcher:
 
         return path
 
-    def __universal_run_prepare(self):
+    def _universal_run_prepare(self):
         start = (self._start_x, self._start_y)
 
         self._found = False
@@ -46,10 +47,15 @@ class PathSearcher:
         self._to_visit = [start]
         self._prev = {start: (None, None)}
 
-    def run(self, detected_map: domain.Map) -> Tuple[List[Tuple[int, int]], float]:
+    @abc.abstractmethod
+    def run(self, detected_map: domain.Map):
+        raise NotImplementedError("PathSearcher.run() is pure virtual")
+
+    def _run(self, detected_map: domain.Map, searcher_run_prepare, add_to_queue, sort_queue) -> Tuple[
+        List[Tuple[int, int]], float]:
         start_time = time.time()  # start counting the time passed
-        self.__universal_run_prepare()  # set _found, _visited and _to_visit
-        self.__searcher_run_prepare()  # set values specific to the PathSearcher instance
+        self._universal_run_prepare()  # set _found, _visited and _to_visit
+        searcher_run_prepare()  # set values specific to the PathSearcher instance
 
         while len(self._to_visit) > 0 and not self._found:
             current_node = (x, y) = self._to_visit.pop(0)
@@ -62,10 +68,10 @@ class PathSearcher:
                 for (delta_x, delta_y) in DIRECTIONS:
                     new_node = (new_x, new_y) = x + delta_x, y + delta_y
                     if detected_map.is_position_valid(new_x, new_y) and new_node not in self._visited:
-                        self.__add_to_queue(aux, current_node, new_node)
+                        add_to_queue(aux, current_node, new_node)
 
                 self._to_visit.extend(aux)
-                self.__sort_queue()
+                sort_queue()
 
         self._path = self.previous_dictionary_to_path(self._prev, self._end_x, self._end_y) if self._found else []
         end_time = time.time()  # stop counting the time passed
@@ -79,15 +85,15 @@ class PathSearcher:
         return abs(start_x - end_x) + abs(start_y - end_y)
 
     @abc.abstractmethod
-    def __searcher_run_prepare(self):
+    def _searcher_run_prepare(self):
         raise NotImplementedError("PathSearcher.__prepare_for_run() is pure virtual")
 
     @abc.abstractmethod
-    def __add_to_queue(self, aux: List[Tuple[int, int]], current_node: Tuple[int, int], new_node: Tuple[int, int]):
+    def _add_to_queue(self, aux: List[Tuple[int, int]], current_node: Tuple[int, int], new_node: Tuple[int, int]):
         raise NotImplementedError("PathSearcher.__add_to_queue() is pure virtual")
 
     @abc.abstractmethod
-    def __sort_queue(self):
+    def _sort_queue(self):
         raise NotImplementedError("PathSearcher.__sort_queue() is pure virtual")
 
     @staticmethod
@@ -114,18 +120,25 @@ class PathSearcherAStar(PathSearcher):
 
     def __init__(self, start_x: int, start_y: int, end_x: int, end_y: int):
         super().__init__(start_x, start_y, end_x, end_y)
+        self._number_of_steps = dict()
 
-    def __searcher_run_prepare(self):
-        # TODO
-        pass
+    def run(self, detected_map: domain.Map):
+        return self._run(detected_map, self._searcher_run_prepare, self._add_to_queue, self._sort_queue)
 
-    def __add_to_queue(self, aux: List[Tuple[int, int]], current_node: Tuple[int, int], new_node: Tuple[int, int]):
-        # TODO
-        pass
+    def _searcher_run_prepare(self):
+        self._number_of_steps = {(self._start_x, self._start_y): 0}
 
-    def __sort_queue(self):
+    def _add_to_queue(self, aux: List[Tuple[int, int]], current_node: Tuple[int, int], new_node: Tuple[int, int]):
         # TODO
-        pass
+        if new_node in self._to_visit and self._number_of_steps[new_node] > self._number_of_steps[current_node] + 1:
+            self._to_visit.remove(new_node)
+        aux.append(new_node)
+        self._prev[new_node] = current_node
+        self._number_of_steps[new_node] = 1 + self._number_of_steps[current_node]
+
+    def _sort_queue(self):
+        end = (self._end_x, self._end_y)
+        self._to_visit.sort(key=lambda coordinates: self._number_of_steps[coordinates] + self.heuristic_manhattan_distance(coordinates, end))
 
 
 class PathSearcherGreedy(PathSearcher):
@@ -137,18 +150,19 @@ class PathSearcherGreedy(PathSearcher):
         super().__init__(start_x, start_y, end_x, end_y)
 
     def run(self, detected_map: domain.Map) -> Tuple[List[Tuple[int, int]], float]:
-        return super().run(detected_map)
+        return self._run(detected_map, self._searcher_run_prepare, self._add_to_queue, self._sort_queue)
 
-    def __searcher_run_prepare(self):
+    def _searcher_run_prepare(self):
         pass
 
-    def __add_to_queue(self, aux: List[Tuple[int, int]], current_node: Tuple[int, int], new_node: Tuple[int, int]) -> None:
+    def _add_to_queue(self, aux: List[Tuple[int, int]], current_node: Tuple[int, int],
+                      new_node: Tuple[int, int]) -> None:
         aux.append(new_node)
-        super()._prev[new_node] = current_node
+        self._prev[new_node] = current_node
 
-    def __sort_queue(self):
-        end = (super()._end_x, super()._end_y)
-        super()._to_visit.sort(key=lambda coordinates: self.heuristic_manhattan_distance(coordinates, end))
+    def _sort_queue(self):
+        end = (self._end_x, self._end_y)
+        self._to_visit.sort(key=lambda coordinates: self.heuristic_manhattan_distance(coordinates, end))
 
 
 class PathSearcherDummy(PathSearcher):
@@ -165,11 +179,11 @@ class PathSearcherDummy(PathSearcher):
 
         return self._path, self._time
 
-    def __searcher_run_prepare(self):
+    def _searcher_run_prepare(self):
         pass
 
-    def __add_to_queue(self, aux: List[Tuple[int, int]], current_node: Tuple[int, int], new_node: Tuple[int, int]):
+    def _add_to_queue(self, aux: List[Tuple[int, int]], current_node: Tuple[int, int], new_node: Tuple[int, int]):
         pass
 
-    def __sort_queue(self):
+    def _sort_queue(self):
         pass

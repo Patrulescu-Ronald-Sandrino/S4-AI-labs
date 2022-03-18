@@ -8,7 +8,8 @@ WHITE = (255, 255, 255)
 
 PALE_BLUE = (128, 179, 255)
 PALE_ORANGE = (255, 166, 77)
-
+DARK_GREEN = (0, 153, 0)
+PALE_GREEN = (128, 255, 128)
 
 
 # define directions
@@ -23,5 +24,6 @@ v = [[-1, 0], [1, 0], [0, 1], [0, -1]]
 
 MAP_WIDTH = 400
 PATH_GENERATION_STEPS = 100
-MAP = "test1.map"
-COLOR_PAIRS = [(BLUE, PALE_BLUE), (RED, PALE_ORANGE)]
+MAP = "assets/maps/test1.map"
+COLOR_PAIRS = [(BLUE, PALE_BLUE), (RED, PALE_ORANGE), (DARK_GREEN, PALE_GREEN)]
+

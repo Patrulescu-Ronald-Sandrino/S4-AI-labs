@@ -93,7 +93,7 @@ class Drone():
                  self.y = self.y + 1
                   
     def mapWithDrone(self, mapImage):
-        drona = pygame.image.load("drona.png")
+        drona = pygame.image.load("assets/images/drona.png")
         mapImage.blit(drona, (self.y * 20, self.x * 20))
         
         return mapImage
@@ -113,7 +113,7 @@ def searchGreedy(mapM, droneD, initialX, initialY, finalX, finalY):
     pass
 
 def dummysearch():
-    #example of some path in test1.map from [5,7] to [7,11]
+    #example of some path in assets/maps/test1.map from [5,7] to [7,11]
     return [[5,7],[5,8],[5,9],[5,10],[5,11],[6,11],[7,11]]
     
 def displayWithPath(image, path):
@@ -132,13 +132,13 @@ def main():
     m = Map()
     #m.randomMap()
     #m.saveMap("test2.map")
-    m.loadMap("test1.map")
+    m.loadMap("assets/maps/test1.map")
 
 
     # initialize the pygame module
     pygame.init()
     # load and set the logo
-    logo = pygame.image.load("logo32x32.png")
+    logo = pygame.image.load("assets/images/logo32x32.png")
     pygame.display.set_icon(logo)
     pygame.display.set_caption("Path in simple environment")
 

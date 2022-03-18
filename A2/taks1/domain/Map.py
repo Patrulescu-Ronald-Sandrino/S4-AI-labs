@@ -3,7 +3,6 @@ from random import random, randint
 
 import numpy as np
 import pygame
-from typing import Tuple
 
 from domain.constants import BLUE, WHITE
 
@@ -44,8 +43,8 @@ class Map:
     def image(self, colour=BLUE, background=WHITE):
         imagine = pygame.Surface((400, 400))
         brick = pygame.Surface((20, 20))
-        brick.fill(BLUE)
-        imagine.fill(WHITE)
+        brick.fill(colour)  # this was BLUE before, and the coloring didn't work
+        imagine.fill(background) # this was also set to WHITE
         for i in range(self.n):
             for j in range(self.m):
                 if self.surface[i][j] == 1:
@@ -82,18 +81,5 @@ class Map:
             steps_taken += 1
             if self.surface[x][y] == value:
                 return x, y
-
-    def generate_typed_positions_pair(self, first_value: int = 0, second_value: int = 0,
-                                      max_number_of_steps: int = -1) -> \
-            Tuple[tuple, tuple]:
-        """
-        Returns a pair of random different positions of given values
-        (assuming that the values are valid
-        and that they can be generated in the given number of steps)
-        :param first_value:
-        :param second_value:
-        :param max_number_of_steps:
-        :return:
-        """
 
 

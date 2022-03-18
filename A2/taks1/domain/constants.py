@@ -26,4 +26,5 @@ MAP_WIDTH = 400
 PATH_GENERATION_STEPS = 100
 MAP = "assets/maps/test1.map"
 COLOR_PAIRS = [(BLUE, PALE_BLUE), (RED, PALE_ORANGE), (DARK_GREEN, PALE_GREEN)]
+DUMMY_SEARCH_PATH = [(5, 7), (5, 8), (5, 9), (5, 10), (5, 11), (6, 11), (7, 11)]
 

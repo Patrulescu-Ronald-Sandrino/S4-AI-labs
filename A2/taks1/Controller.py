@@ -1,12 +1,13 @@
 import time
 from random import randint
-from typing import Tuple
+from typing import Tuple, Type, List
 
 import pygame
 
 from domain.Drone import Drone
 from domain.Map import Map
-from domain.constants import RED, DIRECTIONS
+from domain.PathSearcher import PathSearcher
+from domain.constants import RED, DIRECTIONS, DUMMY_SEARCH_PATH
 
 
 class Controller:
@@ -34,6 +35,11 @@ class Controller:
             self.__map.loadMap(map_filepath)
 
     def generate_path(self, max_number_of_steps: int = -1) -> Tuple[tuple, tuple]:
+        """
+        generates a pair of distinct empty positions inside the map
+        :param max_number_of_steps:
+        :return:
+        """
         def is_tuple_none(xy: tuple) -> bool:
             x, y = xy
             return (x, y) == (None, None)
@@ -48,14 +54,29 @@ class Controller:
             if first_position != second_position:
                 return first_position, second_position
 
-    @staticmethod
-    def dummy_search():
-        # example of some path in assets/maps/test1.map from [5,7] to [7,11]
-        return [[5, 7], [5, 8], [5, 9], [5, 10], [5, 11], [6, 11], [7, 11]]
+    def search_path_v2(self, searcher_class: Type[PathSearcher], start_x: int, start_y: int, end_x: int, end_y: int) -> Tuple[List[Tuple[int, int]], float]:
+        searcher = searcher_class(start_x, start_y, end_x, end_y)
+        return searcher.run(self.__map)
 
-    def search_path(self, algorithm: str, start_x: int, start_y: int, end_x: int, end_y: int) -> tuple:
+    def display_with_path(self, walls_color, path_color, path) -> pygame.Surface:
+        image = self.__map.image(walls_color)
+
+        mark = pygame.Surface((20, 20))
+        mark.fill(path_color)
+
+        for (x, y) in path:
+            image.blit(mark, (y * 20, x * 20))
+
+        return image
+
+    @staticmethod
+    def dummy_search() -> List[Tuple[int, int]]:
+        # example of some path in assets/maps/test1.map from [5,7] to [7,11]
+        return DUMMY_SEARCH_PATH
+
+    def search_path_v1(self, algorithm: str, start_x: int, start_y: int, end_x: int, end_y: int) -> Tuple[List[Tuple[int, int]], float]:
         if algorithm not in self.algorithms:
-            return None, None
+            return [], -1
 
         if algorithm.__contains__("dummy_search"):
             return self.dummy_search(), 0
@@ -85,10 +106,10 @@ class Controller:
                 # TODO to_visit.sort(key=lambda position: self.algorithms[algorithm]['heuristic'](*position, end_x, end_y))
 
         end_time = time.time()
+        interval = end_time - start_time
+        path = [None] if found else []  # TODO: replace [None] with the build_path(...)
 
-        if found:
-            return None, end_time - start_time  # TODO: replace non with the built path
-        return [], end_time - start_time
+        return path, interval
 
     def greedy(self) -> None:
         # TODO
@@ -97,14 +118,3 @@ class Controller:
     def a_star(self) -> None:
         # TODO
         pass
-
-    def display_with_path(self, walls_color, path_color, path) -> pygame.Surface:
-        image = self.__map.image(walls_color)
-
-        mark = pygame.Surface((20, 20))
-        mark.fill(path_color)
-
-        for (x, y) in path:
-            image.blit(mark, (y * 20, x * 20))
-
-        return image

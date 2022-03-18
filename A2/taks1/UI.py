@@ -1,6 +1,7 @@
 import pygame
 
 from Controller import Controller
+from domain.PathSearcher import PathSearcherDummy, PathSearcher
 from domain.constants import WHITE, MAP_WIDTH, PATH_GENERATION_STEPS, MAP, COLOR_PAIRS
 
 
@@ -20,8 +21,25 @@ class UI:
         # initialize the pygame module
         self.__initialize_pygame()
 
+        # choose the algorithm runner version
+        version = 2
+        if version == 1:
+            algorithms = list(self.__controller.algorithms.keys())
+
+            def algorithm_name(x):
+                return x
+
+            caller = self.__controller.search_path_v1
+        else:
+            algorithms = [PathSearcherDummy, PathSearcherDummy, PathSearcherDummy]
+
+            def algorithm_name(x: PathSearcher):
+                return x.get_name()
+
+            caller = self.__controller.search_path_v2
+
         # create a surface on screen that has the size of 800 x 400
-        screen = pygame.display.set_mode((len(self.__controller.algorithms) * MAP_WIDTH, 400))
+        screen = pygame.display.set_mode((len(algorithms) * MAP_WIDTH, 400))
         screen.fill(WHITE)
 
         # load the map
@@ -33,24 +51,20 @@ class UI:
         print()
         print("Start: " + str((start_x, start_y)))
         print("End: " + str((end_x, end_y)))
+        print()
 
-        # run the algorithms
         width_factor = 0
-        for algorithm in self.__controller.algorithms:
-            path, time = self.__controller.search_path(algorithm, start_x, start_y, end_x, end_y)
+        for algorithm in algorithms:
+            path, time = caller(algorithm, start_x, start_y, end_x, end_y)
 
             print('-' * 20)
-            print('Algorithm: ' + algorithm)
-            if len(path) == 0:
-                print("Path: doesn't exist")
-                continue
-            print('Time: ' + str(time))
-            print('Path:\n' + str(path))
-            print('-' * 20)
+            print(PathSearcher.run_result_to_string(algorithm_name(algorithm), path, time))
+            print('-' * 20, '\n')
 
             walls_color, path_color = COLOR_PAIRS[width_factor % len(COLOR_PAIRS)]
             # print("color pair: ", str(walls_color), str(path_color)) # debug print
-            screen.blit(self.__controller.display_with_path(walls_color, path_color, path), (width_factor * MAP_WIDTH, 0))
+            screen.blit(self.__controller.display_with_path(walls_color, path_color, path),
+                        (width_factor * MAP_WIDTH, 0))
             width_factor += 1
 
         pygame.display.flip()

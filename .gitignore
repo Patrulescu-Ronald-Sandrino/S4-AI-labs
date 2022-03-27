@@ -1,6 +1,6 @@
 # ignore all .idea folders; source: https://gist.github.com/jstnlvns/ebaa046fae16543cc9efc7f24bcd0e31
 **/.idea
-**/__pychace__
+**/__pycache__
 # ignore all .swp files
 *.swp
 **/task*2022*.zip

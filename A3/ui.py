@@ -81,8 +81,6 @@ class UI:
     def run(self) -> None:
         self.__loop(Menu("Main Menu")
                     .add(Command.EXIT)
-                    # .add(Command("Map Menu", lambda ui: ui.__loop()))
-                    # .add(Command.EXIT)
                     .add((lambda menu_name: Command(menu_name, lambda ui: ui.__loop(Menu(menu_name)
                                                                                     .add(Command.EXIT)
                                                                                     .add(Command("Create random map",
@@ -115,19 +113,35 @@ class UI:
 
     def __create_random_map(self):
         not_implemented()
-        # self.__controller.setMap(Map().random_map())
+        self.__controller.map = Map().random_map()
+        print("Success: Created and set random map!")
 
     def __load_map(self):
-        not_implemented()
+        map_file_path = input("Enter path to the map file: ")
+        try:
+            self.__controller.map.load_map(map_file_path)
+        except Exception:
+            print("Failure: Couldn't load map from file " + map_file_path)
 
     def __save_map(self):
-        not_implemented()
+        map_file_path = input("Enter path to the map file: ")
+        try:
+            self.__controller.map.save_map(map_file_path)
+        except Exception:
+            print("Failure: Couldn't load map from file " + map_file_path)
 
     def __visualize_map(self):
-        not_implemented()
+        print(self.__controller.map.to_table())
 
     def __parameters_setup(self):
-        not_implemented()
+        population_size = IO.read_int("Enter population size: ")
+        individual_size = IO.read_int("Enter individual size: ")
+        generation_count = IO.read_int("Enter generation count: ")
+        number_of_iterations = IO.read_int("Enter number of iterations: ")
+
+        self.__controller.set_parameters(population_size, individual_size, generation_count, number_of_iterations)
+
+        print("Success: Parameters were set!")
 
     def __run_solver(self):
         not_implemented()

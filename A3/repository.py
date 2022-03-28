@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import pickle
 from domain import *
+from domain.map import Map
+from domain import Population
 
 
 class Repository:

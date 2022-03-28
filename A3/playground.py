@@ -1,10 +1,16 @@
+import inspect
 import math
+import sys
+
+from texttable import Texttable
 
 
 def run() -> None:
     # add function calls here
     # alignment_computing()
     # menu_to_str()
+    # files()
+    text_table()
     return
 
 
@@ -36,6 +42,54 @@ def menu_to_str():
     print("size = ", len(commands))
     # print("log = ", math.log(len(commands), 10))
     print("align = ", align)
+
+
+def files():
+
+    def write(file_name: str, content: str):
+        try:
+            with open(file_name, "w") as file:
+                file.write(content)
+        except OSError:
+            # sys.stderr.write("[error][{}.{}()]".format(__class__, inspect.stack()[0].function))
+            sys.stderr.write("[error][{}.{}()]".format("", inspect.stack()[0].function))
+
+    def read(file_name: str):
+        try:
+            with open(file_name, "r") as file:
+                return file.readlines()
+        except OSError as exception:
+            pass
+            # sys.stderr.write(inspect.stack().__str__())
+            for line in inspect.stack():
+                print(line)
+            print(inspect.stack()[0].function)
+            print(inspect.stack()[1].function)
+            print(exception)
+            print(sys.stderr.write("[error][{}.{}()]".format("", inspect.stack()[0].function)))
+
+    class A:
+        def foo(self):
+            print(inspect.stack()[0].function)
+            print(inspect.stack()[1].function)
+
+    # A().foo()
+    print("read contents:", read("abc.txt"))
+
+
+def text_table():
+    rows = 20
+    columns = 20
+    surface = [[row * columns + column for column in range(0, columns)] for row in range(0, rows)]
+    # surface = [[rows * columns for column in range(0, columns)] for row in range(0, rows)]
+    # for column in surface:
+    #     print(column)
+
+    table = Texttable()
+    table.set_cols_align(['c' for _ in range(0, columns + 1)])
+    # table.set_cols_width([5 for _ in range(0, columns + 1)])
+    table.add_rows([[""] + [str(_) for _ in range(0, columns)]] + [[str(row)] + [str(surface[row][column]) for column in range(0, columns)] for row in range(0, rows)])
+    print(table.draw())
 
 
 run()

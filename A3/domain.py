@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-
 from random import *
-from utils import *
-import numpy as np
+
 
 # the glass gene can be replaced with int or float, or other types
 # depending on your problem's representation
@@ -56,24 +54,3 @@ class Population:
         pass
 
 
-class Map:
-    def __init__(self, n=20, m=20):
-        self.n = n
-        self.m = m
-        self.surface = np.zeros((self.n, self.m))
-    
-    def random_map(self, fill=0.2):
-        for i in range(self.n):
-            for j in range(self.m):
-                if random() <= fill:
-                    self.surface[i][j] = 1
-                
-    def __str__(self):
-        string = ""
-        for i in range(self.n):
-            for j in range(self.m):
-                string = string + str(int(self.surface[i][j]))
-            string = string + "\n"
-        return string
-                
-    

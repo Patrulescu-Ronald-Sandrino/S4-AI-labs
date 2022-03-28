@@ -140,5 +140,6 @@ class UI:
 
 
 Command.EXIT = Command("Exit", UI._set_exit)  # pass methods as arguments
-Command.BACK = Command("Go back", utils.nop)  # static instances of a class
+# Command.BACK = Command("Go back", utils.nop)  # static instances of a class
+Command.BACK = Command("Go back", lambda ui: None)  # static instances of a class
 Command.INVALID = Command("Invalid", lambda *args, **kwargs: print("Not an option!"))

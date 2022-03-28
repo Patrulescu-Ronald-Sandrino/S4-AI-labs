@@ -71,8 +71,9 @@ class Menu:
 
 
 class UI:
-    def __init__(self):
+    def __init__(self, controller: Controller):
         self.__exit = False
+        self.__controller = controller
 
     def _set_exit(self) -> None:
         self.__exit = True
@@ -114,6 +115,7 @@ class UI:
 
     def __create_random_map(self):
         not_implemented()
+        # self.__controller.setMap(Map().random_map())
 
     def __load_map(self):
         not_implemented()

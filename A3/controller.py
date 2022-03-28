@@ -1,11 +1,14 @@
 from repository import *
 
 
-class controller():
+class Controller:
     def __init__(self, args):
         # args - list of parameters needed in order to create the controller
         pass
-    
+        # self.__repository = repository
+        # self.__drone = drone
+        # self.__map = map
+
 
     def iteration(self, args):
         # args - list of parameters needed to run one iteration
@@ -25,7 +28,6 @@ class controller():
         
         # return the results and the info for statistics
         pass
-    
     
     def solver(self, args):
         # args - list of parameters needed in order to run the solver

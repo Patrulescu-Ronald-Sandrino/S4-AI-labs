@@ -50,27 +50,26 @@ class Population:
         for x in self.__v:
             x.fitness()
             
-            
-    def selection(self, k = 0):
+    def selection(self, k=0):
         # perform a selection of k individuals from the population
         # and returns that selection
         pass
 
 
 class Map:
-    def __init__(self, n = 20, m = 20):
+    def __init__(self, n=20, m=20):
         self.n = n
         self.m = m
         self.surface = np.zeros((self.n, self.m))
     
-    def randomMap(self, fill = 0.2):
+    def random_map(self, fill=0.2):
         for i in range(self.n):
             for j in range(self.m):
-                if random() <= fill :
+                if random() <= fill:
                     self.surface[i][j] = 1
                 
     def __str__(self):
-        string=""
+        string = ""
         for i in range(self.n):
             for j in range(self.m):
                 string = string + str(int(self.surface[i][j]))

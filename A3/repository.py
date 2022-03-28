@@ -4,7 +4,7 @@ import pickle
 from domain import *
 
 
-class repository():
+class Repository:
     def __init__(self):
          
         self.__populations = []

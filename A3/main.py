@@ -1,8 +1,10 @@
+from controller import Controller
 from ui import UI
 
 
 def main():
-    UI().run()
+    controller = Controller(None)
+    UI(controller).run()
 
 
 if __name__ == "__main__":

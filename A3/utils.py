@@ -40,6 +40,8 @@ DEFAULT_INDIVIDUAL_SIZE = 30
 DEFAULT_GENERATION_COUNT = 20
 DEFAULT_NUMBER_OF_ITERATIONS = 100
 
+DEFAULT_SEED = 30
+
 
 def not_implemented(*args, **kwargs):  # TODO remove after finishing the UI
     print("Not implemented!")

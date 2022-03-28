@@ -52,7 +52,7 @@ def files():
                 file.write(content)
         except OSError:
             # sys.stderr.write("[error][{}.{}()]".format(__class__, inspect.stack()[0].function))
-            sys.stderr.write("[error][{}.{}()]".format("", inspect.stack()[0].function))
+            sys.stderr.write("[error][{}.{}()]\n".format("", inspect.stack()[0].function))
 
     def read(file_name: str):
         try:

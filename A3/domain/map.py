@@ -2,7 +2,7 @@ import copy
 import inspect
 import pickle
 import sys
-from enum import Enum
+from enum import IntEnum
 from random import random, randint
 from typing import List, Tuple, Dict
 
@@ -13,7 +13,7 @@ import utils
 
 
 class Map:
-    class Position(Enum):
+    class Position(IntEnum):
         EMPTY = 0
         WALL = 1
         ACCESSIBLE = 2
@@ -54,15 +54,15 @@ class Map:
                     self.surface[i][j] = self.Position.WALL
         return self
 
-    def save_map(self, map_file_path: str = "test.map") -> None:
+    def save_map(self, map_file_path: str = "assets/test.map") -> None:
         try:
             with open(map_file_path, 'wb') as file:
                 pickle.dump(self, file)
         except OSError as e:
-            sys.stderr.write("[error][{}.{}()] {}".format(__class__, inspect.stack()[0].function, e))
+            sys.stderr.write("[error][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function, e))
             raise Exception("Failed to save map")
 
-    def load_map(self, map_file_path: str = "test.map") -> 'Map':
+    def load_map(self, map_file_path: str = "assets/test.map") -> 'Map':
         try:
             with open(map_file_path, 'rb') as file:
                 loaded_map = pickle.load(file)
@@ -71,7 +71,7 @@ class Map:
                 self.surface = loaded_map.surface
             return self
         except OSError as e:
-            sys.stderr.write("[error][{}.{}()] {}".format(__class__, inspect.stack()[0].function, e))
+            sys.stderr.write("[error][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function, e))
             raise Exception("Failed to load map")
 
     def generate_random_position(self) -> Tuple[int, int]:

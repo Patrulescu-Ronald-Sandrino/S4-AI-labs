@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from typing import Tuple
 
+import pygame
+import time
 from pygame.locals import *
-import pygame, time
 
 from controller import Controller
 from utils import *
-from domain import *
 
 
 class GUI:
@@ -14,7 +14,7 @@ class GUI:
                  controller: Controller,
                  dimension: Tuple[int, int] = DEFAULT_SCREEN_DIMENSION,
                  window_title: str = "drone exploration with AE",
-                 logo_image_path: str = "logo32x32.png",
+                 logo_image_path: str = "assets/logo32x32.png",
                  screen_fill: Tuple[int, int, int] = Color.WHITE):
         self.__controller = controller
         pygame.init()
@@ -41,7 +41,7 @@ class GUI:
 def init_pygame(dimension):
     # init the pygame
     pygame.init()
-    logo = pygame.image.load("logo32x32.png")
+    logo = pygame.image.load("assets/logo32x32.png")
     pygame.display.set_icon(logo)
     pygame.display.set_caption("drone exploration with AE")
     
@@ -70,7 +70,7 @@ def moving_drone(current_map, path, speed: int = 1, mark_seen = True):
     
     screen = init_pygame((current_map.rows * 20, current_map.columns * 20))
 
-    drona = pygame.image.load("drona.png")
+    drona = pygame.image.load("assets/drona.png")
         
     for i in range(len(path)):
         screen.blit(image(current_map), (0, 0))

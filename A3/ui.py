@@ -5,11 +5,8 @@
 import math
 from typing import Callable
 
-import utils
-from gui import *
 from controller import *
 from repository import *
-from domain import *
 
 
 # create a menu
@@ -112,26 +109,37 @@ class UI:
             command.get_function()(self)
 
     def __create_random_map(self):
-        not_implemented()
         self.__controller.map = Map().random_map()
         print("Success: Created and set random map!")
 
     def __load_map(self):
-        map_file_path = input("Enter path to the map file: ")
+        map_file_path = input("Enter path to the map file (enter 1 to quit)(press Enter - use default file: assets/test.map): ")
+        if map_file_path == "":
+            map_file_path = "assets/test.map"
+        elif map_file_path == "1":
+            return
         try:
             self.__controller.map.load_map(map_file_path)
+            print("Success: Map was loaded!")
         except Exception:
             print("Failure: Couldn't load map from file " + map_file_path)
 
     def __save_map(self):
-        map_file_path = input("Enter path to the map file: ")
+        map_file_path = input("Enter path to the map file (enter 1 to quit)(press Enter - use default file: assets/test.map): ")
+        if map_file_path == "":
+            map_file_path = "assets/test.map"
+        elif map_file_path == "1":
+            return
         try:
             self.__controller.map.save_map(map_file_path)
+            print("Success: Map was saved!")
         except Exception:
             print("Failure: Couldn't load map from file " + map_file_path)
 
     def __visualize_map(self):
-        print(self.__controller.map.to_table())
+        print("Variant 1:\n" + self.__controller.map.to_table())
+        print()
+        print("Variant 2:\n" + str(self.__controller.map))
 
     def __parameters_setup(self):
         population_size = IO.read_int("Enter population size: ")
@@ -145,6 +153,8 @@ class UI:
 
     def __run_solver(self):
         not_implemented()
+
+        best_individuals, averages, duration = self.__controller.solver()
 
     def __visualize_statistics(self):
         not_implemented()

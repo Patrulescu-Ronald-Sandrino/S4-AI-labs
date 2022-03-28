@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from domain import *
 from domain.map import Map
-from domain import Population
+from domain.population import Population
 
 
 class Repository:

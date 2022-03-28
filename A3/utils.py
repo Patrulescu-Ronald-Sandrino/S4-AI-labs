@@ -20,3 +20,14 @@ v = [[-1, 0], [1, 0], [0, 1], [0, -1]]
 #define mapsize 
 
 mapLengh = 20
+
+
+def nop():
+    pass
+
+
+not_implemented = lambda *args, **kwargs: print("Not implemented!")
+
+
+def print_wrapper(*args, **kwargs):
+    print(args)

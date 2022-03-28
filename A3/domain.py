@@ -7,10 +7,12 @@ import numpy as np
 # the glass gene can be replaced with int or float, or other types
 # depending on your problem's representation
 
+
 class gene:
     def __init__(self):
         # random initialise the gene according to the representation
         pass
+
 
 class Individual:
     def __init__(self, size = 0):
@@ -36,11 +38,12 @@ class Individual:
             # perform the crossover between the self and the otherParent 
         
         return offspring1, offspring2
-    
-class Population():
+
+
+class Population:
     def __init__(self, populationSize = 0, individualSize = 0):
         self.__populationSize = populationSize
-        self.__v = [domain.Individual(individualSize) for x in range(populationSize)]
+        self.__v = [Individual(individualSize) for x in range(populationSize)]
         
     def evaluate(self):
         # evaluates the population
@@ -52,8 +55,9 @@ class Population():
         # perform a selection of k individuals from the population
         # and returns that selection
         pass
-    
-class Map():
+
+
+class Map:
     def __init__(self, n = 20, m = 20):
         self.n = n
         self.m = m

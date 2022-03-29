@@ -42,6 +42,8 @@ DEFAULT_NUMBER_OF_ITERATIONS = 100
 
 DEFAULT_SEED = 30
 
+NUMBER_OF_RUNS_FOR_STATISTICS = 30
+
 
 def not_implemented(*args, **kwargs):  # TODO remove after finishing the UI
     print("Not implemented!")

@@ -155,9 +155,16 @@ class UI:
         not_implemented()
 
         best_individuals, averages, duration = self.__controller.solver()
+        best_individuals.sort(key=lambda individual: individual.get_fitness(), reverse=True)  # TODO
+        # choose top 3/5  # TODO
+        # plot_graph(averages)  # TODO
+        # log_to_file(averages)  # TODO
+
 
     def __visualize_statistics(self):
         not_implemented()
+
+
 
     def __view_drone_moving(self):
         not_implemented()

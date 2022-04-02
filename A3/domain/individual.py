@@ -1,8 +1,8 @@
+import functools
 from random import random, randint
 from typing import Tuple, Optional
 
 import utils
-from domain import gene
 from domain.drone import Drone
 from domain.map import Map
 
@@ -13,17 +13,34 @@ class Individual:
         self.__drone = drone
         self.__size = size
         self.__chromosome = [randint(0, 3) for _ in range(self.__size)]
-        self.__fitness: float = -1
+        self.__fitness: int = -1
 
     @property
-    def fitness(self) -> float:
+    def fitness(self) -> int:
         return self.__fitness
 
-    def compute_fitness(self) -> float:
+    def compute_fitness(self) -> int:
         # compute the fitness for the indivisual
         # and save it in self.__fitness
-        pass
-        raise NotImplementedError
+        position = (self.__drone.x, self.__drone.y)
+        fittness: int = functools.reduce(lambda a, b: a + b, self.__map.read_udm_sensors(*position))
+        number_of_moves: int = 0
+
+        for gene in self.__chromosome:
+            number_of_moves += 1
+            delta_x, delta_y = utils.DIRECTIONS[gene]
+            current_x, current_y = position
+            position = (current_x + delta_x, current_y + delta_y)
+
+            if self.__map.is_position_inside_map(position):
+                fittness += functools.reduce(lambda a, b: a + b, self.__map.read_udm_sensors(*position))
+            else:
+                fittness -= 50
+            if number_of_moves == self.__drone.battery:
+                break
+
+        self.__fitness = fittness
+        return self.__fitness
 
     def mutate(self, mutate_probability: float = utils.INDIVIDUAL_MUTATION_PROBABILITY) -> None:
         # performs swap mutation

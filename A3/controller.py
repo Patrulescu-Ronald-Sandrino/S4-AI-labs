@@ -1,3 +1,5 @@
+import datetime
+import functools
 import inspect
 import math
 import random
@@ -5,6 +7,7 @@ import sys
 import time
 from typing import List, Tuple, Any, Optional
 
+import numpy
 import numpy as np
 
 import utils
@@ -80,12 +83,12 @@ class Controller:
         offspring2.mutate(INDIVIDUAL_MUTATION_PROBABILITY)
 
         # add the fittest offspring to population
-        fittest_offspring = offspring1 if offspring1.compute_fitness() > offspring2.compute_fitness() else offspring2  # TODO: compute_fitness()
+        fittest_offspring = offspring1 if offspring1.compute_fitness() > offspring2.compute_fitness() else offspring2
         population.add_individual(fittest_offspring)
 
     def __perform_generation_iterations(self, population: Population, iterations: int = DEFAULT_NUMBER_OF_ITERATIONS):
         for iteration in range(self.__number_of_iterations):
-            self.iteration(population)  # TODO
+            self.iteration(population)
         population.set_individuals(population.selection(self.__population_size))
         self.__repository.set_last_population(population)
 
@@ -109,7 +112,12 @@ class Controller:
             best_individual = population.selection(1)[0]  # NOTE: selection also performs fitness evaluation
 
         last_fitness_average: float = np.average([individual.fitness for individual in population.get_individuals()])
-
+        # print("last_fitness_average = ", last_fitness_average)
+        # print([individual._Individual__chromosome for individual in population.get_individuals()])
+        # print([individual.fitness for individual in population.get_individuals()])
+        sum = functools.reduce(lambda a, b: a + b, [individual.fitness for individual in population.get_individuals()])
+        # print(sum)
+        # print("last_fitness_average (using the formula) = ", sum / len(population.get_individuals()))
         return best_individual, last_fitness_average
 
     def solver(self, seed: int = DEFAULT_SEED) -> Tuple[List[Individual], List[float], float]:
@@ -123,15 +131,49 @@ class Controller:
 
         start_time: float = time.time()
         align = math.floor(math.log(max(seed, 1), 10)) + 1
-        print("{:>{}}{:>8}{:>8}".format("Seed", align, "Average", "Best fitness"))
+        # print("{:>{}}{:>8}{:>8}".format("Seed", align, "Average", "Best fitness"))
+        print("{:>12}{:>12}{:>15}".format("Seed", "Average", "Best fitness"))
         for current_seed in range(1, seed + 1):
             best_individual, average = self.run(current_seed)
-            print("{:>{}}{:8.2f}{:8.2f}".format(current_seed, align, average, best_individual.fitness))
+            # print("{:>{}}{:8.2f}{:8.2f}".format(current_seed, align, average, best_individual.fitness))
+            print("{:>12}{:12.2f}{:15.2f}".format(current_seed, average, best_individual.fitness))
             best_individuals.append(best_individual)
             averages.append(average)
         end_time: float = time.time()
+        duration: float = end_time - start_time
 
-        return best_individuals, averages, end_time - start_time
+        self.__best_individuals, self.__averages, self.__duration = best_individuals, averages, duration
+        self.log_statistics_to_file(averages, duration, seed, self.__population_size, self.__individual_size, self.__generation_count, self.__number_of_iterations)
+        return best_individuals, averages, duration
 
     def get_results(self) -> Tuple[List[Individual], List[float], float]:
         return self.__best_individuals, self.__averages, self.__duration
+
+    @staticmethod
+    def log_statistics_to_file(averages: List[float],
+                               duration: float,
+                               last_seed: int,
+                               population_size: int,
+                               individual_size: int,
+                               generation_count: int,
+                               number_of_iterations: int,
+                               filepath="results/results.txt"):
+        result: str = ""
+        result += "%s:\n" % datetime.datetime.now()
+        result += "Seeds = [%d, %d]\n" % (1, last_seed)
+        result += "Population size = %d\n" % population_size
+        result += "Individual size = %d\n" % individual_size
+        result += "Generation count = %d\n" % generation_count
+        result += "Number of iterations = %d\n" % number_of_iterations
+        result += "Mutation probability = %.2f\n" % INDIVIDUAL_MUTATION_PROBABILITY
+        result += "Crossover probability = %.2f\n" % INDIVIDUAL_CROSSOVER_PROBABILITY
+        result += "Duration = %s\n" % duration
+        result += "Average of averages = %.3f\n" % numpy.average(averages)
+        result += "std. dev. of averages = %.3f\n" % numpy.std(averages)
+
+        try:
+            with open(filepath, 'w') as file:
+                file.write(result)
+        except OSError as e:
+            sys.stderr.write("[error][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function, e))
+            raise Exception("Failed to log statistics to file")

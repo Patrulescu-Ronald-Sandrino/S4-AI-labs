@@ -5,7 +5,10 @@
 import math
 from typing import Callable
 
+import matplotlib.pyplot
+
 from controller import *
+from gui import moving_drone
 from repository import *
 
 
@@ -151,20 +154,24 @@ class UI:
 
         print("Success: Parameters were set!")
 
-    def __run_solver(self):
-        not_implemented()
+    @staticmethod
+    def __plot_graph(averages, filepath: str = "results/average-population-fittness.png"):
+        matplotlib.pyplot.plot(averages)
+        matplotlib.pyplot.savefig(filepath)
 
-        best_individuals, averages, duration = self.__controller.solver()
-        best_individuals.sort(key=lambda individual: individual.get_fitness(), reverse=True)  # TODO
-        # choose top 3/5  # TODO
-        # plot_graph(averages)  # TODO
-        # log_to_file(averages)  # TODO
+    def __run_solver(self):
+        best_individuals, averages, duration = self.__controller.solver(DEFAULT_SEED)
+
+        best_individuals.sort(key=lambda individual: individual.get_fitness(), reverse=True)
+        # choose top 3/5  # TODO but why top 3/5?
+        self.__plot_graph(averages)
 
     def __visualize_statistics(self):
         not_implemented()
 
     def __view_drone_moving(self):
-        not_implemented()
+        individuals, _, _ = self.__controller.get_results()
+        moving_drone(self.__controller.map, individuals[0].)
 
 
 Command.EXIT = Command("Exit", UI._set_exit)  # pass methods as arguments

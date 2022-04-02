@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
-from enum import Enum
+from enum import Enum, IntEnum
 
 # Creating some colors
 from typing import Tuple
@@ -16,7 +16,7 @@ class Color(Enum):
 
 
 # define directions
-class Directions(Enum):
+class Directions(IntEnum):
     UP = 0
     DOWN = 2
     LEFT = 1
@@ -24,7 +24,7 @@ class Directions(Enum):
 
 
 # define indexes variations
-DIRECTIONS = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+DIRECTIONS = [(-1, 0), (1, 0), (0, 1), (0, -1)]
 
 # define map size
 MAP_HEIGHT = 20

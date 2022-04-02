@@ -68,7 +68,7 @@ def close_pygame():
 def moving_drone(current_map, path, speed: int = 1, mark_seen = True):
     # animation of a drone on a path
     
-    screen = init_pygame((current_map.rows * 20, current_map.columns * 20))
+    screen = init_pygame((current_map.__rows * 20, current_map.__columns * 20))
 
     drona = pygame.image.load("assets/drona.png")
         
@@ -79,15 +79,15 @@ def moving_drone(current_map, path, speed: int = 1, mark_seen = True):
             brick = pygame.Surface((20, 20))
             brick.fill(Color.GREEN)
             for j in range(i+1):
-                for var in DIRECTIONS:
+                for (delta_x, delta_y) in DIRECTIONS:
                     x = path[j][0]
                     y = path[j][1]
-                    while ((0 <= x + var[0] < current_map.rows and
-                            0 <= y + var[1] < current_map.columns) and
-                           current_map.surface[x + var[0]][y + var[1]] != 1):
-                        x = x + var[0]
-                        y = y + var[1]
-                        screen.blit(brick, ( y * 20, x * 20))
+                    while ((0 <= x + delta_x < current_map.__rows and
+                            0 <= y + delta_y < current_map.__columns) and
+                           current_map.__surface[x + delta_x][y + delta_y] != 1):
+                        x = x + delta_x
+                        y = y + delta_y
+                        screen.blit(brick, (y * 20, x * 20))
         
         screen.blit(drona, (path[i][1] * 20, path[i][0] * 20))
         pygame.display.flip()
@@ -95,16 +95,46 @@ def moving_drone(current_map, path, speed: int = 1, mark_seen = True):
     close_pygame()
 
 
+def moving_drone2(current_map, path_as_directions, speed: int = 1, mark_seen = True):
+    # animation of a drone on a path
+
+    screen = init_pygame((current_map.__rows * 20, current_map.__columns * 20))
+
+    drona = pygame.image.load("assets/drona.png")
+
+    for i in range(len(path_as_directions)):
+        screen.blit(image(current_map), (0, 0))
+
+        if mark_seen:
+            brick = pygame.Surface((20, 20))
+            brick.fill(Color.GREEN)
+            for j in range(i+1):
+                for (delta_x, delta_y) in DIRECTIONS:
+                    x = path_as_directions[j][0]
+                    y = path_as_directions[j][1]
+                    while ((0 <= x + delta_x < current_map.__rows and
+                            0 <= y + delta_y < current_map.__columns) and
+                           current_map.__surface[x + delta_x][y + delta_y] != 1):
+                        x = x + delta_x
+                        y = y + delta_y
+                        screen.blit(brick, (y * 20, x * 20))
+
+        screen.blit(drona, (path_as_directions[i][1] * 20, path_as_directions[i][0] * 20))
+        pygame.display.flip()
+        time.sleep(0.5 * speed)
+    close_pygame()
+
+
 def image(current_map, colour: Tuple[int, int, int] = Color.BLUE, background: Tuple[int, int, int] = Color.WHITE):
     # creates the image of a map
     
-    imagine = pygame.Surface((current_map.rows * 20, current_map.columns * 20))
+    imagine = pygame.Surface((current_map.__rows * 20, current_map.__columns * 20))
     brick = pygame.Surface((20, 20))
     brick.fill(colour)
     imagine.fill(background)
-    for i in range(current_map.rows):
-        for j in range(current_map.columns):
-            if current_map.surface[i][j] == 1:
+    for i in range(current_map.__rows):
+        for j in range(current_map.__columns):
+            if current_map.__surface[i][j] == 1:
                 imagine.blit(brick, (j * 20, i * 20))
                 
     return imagine        

@@ -67,11 +67,13 @@ def random_int(start: int, end: int) -> int:
     return random.randint(start, end)
 
 
-def generate_different_random_numbers(start: int, end: int) -> Tuple[int, int]:
+def generate_different_random_numbers(start: int, end: int, max_number_of_iterations: int = 10 ** 6) -> Tuple[int, int]:
     first: int = random_int(start, end)
     second: int = random_int(start, end)
+    iterations_done: int = 0
 
-    while first != second:
+    while first != second and iterations_done <= max_number_of_iterations:
+        iterations_done += 1
         second = random_int(start, end)
 
     return first, second

@@ -7,10 +7,11 @@ from texttable import Texttable
 
 def run() -> None:
     # add function calls here
-    alignment_computing()
+    # alignment_computing()
     # menu_to_str()
     # files()
     # text_table()
+    # read_write_one_liner()
     return
 
 
@@ -90,6 +91,13 @@ def text_table():
     # table.set_cols_width([5 for _ in range(0, columns + 1)])
     table.add_rows([[""] + [str(_) for _ in range(0, columns)]] + [[str(row)] + [str(surface[row][column]) for column in range(0, columns)] for row in range(0, rows)])
     print(table.draw())
+
+
+def read_write_one_liner():
+    x = 3
+    y = 2
+    y, x = x, y
+    print(x, y)
 
 
 run()

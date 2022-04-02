@@ -1,8 +1,9 @@
 import inspect
+import math
 import random
 import sys
 import time
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Optional
 
 import numpy as np
 
@@ -55,7 +56,7 @@ class Controller:
         self.__generation_count = generation_count
         self.__number_of_iterations = number_of_iterations
 
-    def iteration(self, population: Population):
+    def iteration(self, population: Population) -> None:
         # args - list of parameters needed to run one iteration
         # a iteration:
         # selection of the parrents
@@ -68,8 +69,19 @@ class Controller:
         first_parent: Individual = individuals[first_parent_index]
         second_parent: Individual = individuals[first_parent_index]
 
-        # TODO crossover
-        # TODO mutate
+        # crossover
+        offsprings: Optional[Tuple[Individual, Individual]] = first_parent.crossover(second_parent, INDIVIDUAL_CROSSOVER_PROBABILITY)
+        if not offsprings:
+            return
+
+        # mutate
+        (offspring1, offspring2) = offsprings
+        offspring1.mutate(INDIVIDUAL_MUTATION_PROBABILITY)
+        offspring2.mutate(INDIVIDUAL_MUTATION_PROBABILITY)
+
+        # add the fittest offspring to population
+        fittest_offspring = offspring1 if offspring1.compute_fitness() > offspring2.compute_fitness() else offspring2  # TODO: compute_fitness()
+        population.add_individual(fittest_offspring)
 
     def __perform_generation_iterations(self, population: Population, iterations: int = DEFAULT_NUMBER_OF_ITERATIONS):
         for iteration in range(self.__number_of_iterations):
@@ -110,8 +122,11 @@ class Controller:
         averages: List[float] = []
 
         start_time: float = time.time()
+        align = math.floor(math.log(max(seed, 1), 10)) + 1
+        print("{:>{}}{:>8}{:>8}".format("Seed", align, "Average", "Best fitness"))
         for current_seed in range(1, seed + 1):
             best_individual, average = self.run(current_seed)
+            print("{:>{}}{:8.2f}{:8.2f}".format(current_seed, align, average, best_individual.fitness))
             best_individuals.append(best_individual)
             averages.append(average)
         end_time: float = time.time()

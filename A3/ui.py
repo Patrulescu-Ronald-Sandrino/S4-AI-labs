@@ -160,11 +160,8 @@ class UI:
         # plot_graph(averages)  # TODO
         # log_to_file(averages)  # TODO
 
-
     def __visualize_statistics(self):
         not_implemented()
-
-
 
     def __view_drone_moving(self):
         not_implemented()

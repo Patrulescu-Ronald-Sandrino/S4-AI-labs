@@ -6,6 +6,7 @@ from typing import List, Tuple, Any
 
 import numpy as np
 
+import utils
 from domain.drone import Drone
 from domain.individual import Individual
 from repository import *
@@ -54,14 +55,21 @@ class Controller:
         self.__generation_count = generation_count
         self.__number_of_iterations = number_of_iterations
 
-    def iteration(self, args):
+    def iteration(self, population: Population):
         # args - list of parameters needed to run one iteration
         # a iteration:
         # selection of the parrents
         # create offsprings by crossover of the parents
         # apply some mutations
         # selection of the survivors
-        pass
+        individuals: List[Individual] = population.get_individuals()
+
+        first_parent_index, second_parent_index = utils.generate_different_random_numbers(0, len(individuals) - 1)
+        first_parent: Individual = individuals[first_parent_index]
+        second_parent: Individual = individuals[first_parent_index]
+
+        # TODO crossover
+        # TODO mutate
 
     def __perform_generation_iterations(self, population: Population, iterations: int = DEFAULT_NUMBER_OF_ITERATIONS):
         for iteration in range(self.__number_of_iterations):

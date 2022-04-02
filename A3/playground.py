@@ -7,10 +7,10 @@ from texttable import Texttable
 
 def run() -> None:
     # add function calls here
-    # alignment_computing()
+    alignment_computing()
     # menu_to_str()
     # files()
-    text_table()
+    # text_table()
     return
 
 
@@ -26,12 +26,12 @@ def menu_to_str():
     commands = ["a", "b", "c", "d"]
     commands = list(range(9))
     commands = list(range(10))
-    commands = list(range(11))
-    commands = list(range(99))
-    commands = list(range(100))
-    commands = list(range(101))
-    commands = []
-    commands = ["val"]
+    # commands = list(range(11))
+    # commands = list(range(99))
+    # commands = list(range(100))
+    # commands = list(range(101))
+    # commands = []
+    # commands = ["val"]
     result = ""
     align = math.floor(math.log(max(len(commands) - 1, 1), 10)) + 1  # math - log; math - floor
     print(align)

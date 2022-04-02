@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-
-
+import random
 from enum import Enum
 
-
 # Creating some colors
+from typing import Tuple
+
+
 class Color(Enum):
     BLUE = (0, 0, 255)
     GRAY_BLUE = (50, 120, 120)
@@ -34,7 +35,6 @@ DRONE_START_POSITION = (5, 5)
 
 DEFAULT_SCREEN_DIMENSION = (400, 400)
 
-
 DEFAULT_POPULATION_SIZE = 100
 DEFAULT_INDIVIDUAL_SIZE = 30
 DEFAULT_GENERATION_COUNT = 20
@@ -43,6 +43,9 @@ DEFAULT_NUMBER_OF_ITERATIONS = 100
 DEFAULT_SEED = 30
 
 NUMBER_OF_RUNS_FOR_STATISTICS = 30
+
+INDIVIDUAL_MUTATION_PROBABILITY = 0.04
+INDIVIDUAL_CROSSOVER_PROBABILITY = 0.8
 
 
 def not_implemented(*args, **kwargs):  # TODO remove after finishing the UI
@@ -58,3 +61,17 @@ class IO:
                 return int(input(prompt_message))
             except ValueError as e:
                 print(failure_message + "ValueError message: ", e)
+
+
+def random_int(start: int, end: int) -> int:
+    return random.randint(start, end)
+
+
+def generate_different_random_numbers(start: int, end: int) -> Tuple[int, int]:
+    first: int = random_int(start, end)
+    second: int = random_int(start, end)
+
+    while first != second:
+        second = random_int(start, end)
+
+    return first, second

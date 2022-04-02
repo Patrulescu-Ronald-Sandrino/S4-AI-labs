@@ -1,5 +1,7 @@
 from random import random
+from typing import Tuple
 
+import utils
 from domain import gene
 from domain.drone import Drone
 from domain.map import Map
@@ -22,13 +24,13 @@ class Individual:
         # and save it in self.__fitness
         pass
 
-    def mutate(self, mutate_probability: float = 0.04):
+    def mutate(self, mutate_probability: float = utils.INDIVIDUAL_MUTATION_PROBABILITY):
         if random() < mutate_probability:
             pass
             # perform a mutation with respect to the representation
 
-    def crossover(self, otherParent, crossover_probability: float = 0.8):
-        offspring1, offspring2 = Individual(self.__size), Individual(self.__size)
+    def crossover(self, other_parent: 'Individual', crossover_probability: float = utils.INDIVIDUAL_CROSSOVER_PROBABILITY) -> Tuple['Individual', 'Individual']:
+        offspring1, offspring2 = Individual(self.__map, self.__drone, self.__size), Individual(self.__map, self.__drone, self.__size)
         if random() < crossover_probability:
             pass
             # perform the crossover between the self and the otherParent

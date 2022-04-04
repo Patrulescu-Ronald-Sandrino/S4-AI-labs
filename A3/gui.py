@@ -140,8 +140,9 @@ def moving_drone3(current_map: Map, path: List[Tuple[int, int]], speed: int = 1,
     screen = init_pygame((current_map.height * 20, current_map.width * 20))
 
     drona = pygame.image.load("assets/drona.png")
+    img = image(current_map)
     for i in range(len(path)):
-        screen.blit(image(current_map), (0, 0))
+        screen.blit(img, (0, 0))
         brick1 = pygame.Surface((20, 20))
         brick1.fill(Color.RED)
 
@@ -162,12 +163,14 @@ def moving_drone3(current_map: Map, path: List[Tuple[int, int]], speed: int = 1,
                     y = y + delta_y
                     # if (x, y) not in path:
                     screen.blit(brick, (y * 20, x * 20))
-        if i > 0:
-            screen.blit(brick1, (path[i - 1][1] * 20, path[i - 1][0] * 20))
+        if i > 0 and current_map[path[i-1][0]][path[i - 1][1]] != Map.Position.WALL:
+            img.blit(brick1, (path[i - 1][1] * 20, path[i - 1][0] * 20))
         screen.blit(drona, (path[i][1] * 20, path[i][0] * 20))
+        if i == len(path) - 1:
+            screen.blit(img, (0, 0))
         pygame.display.flip()
         time.sleep(0.5 * speed)
-    print("Finished")
+    print("Finished. Path: ", path)
     close_pygame()
 
 

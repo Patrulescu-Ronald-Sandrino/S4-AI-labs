@@ -41,10 +41,10 @@ class Individual:
             current_x, current_y = position
             position = (current_x + delta_x, current_y + delta_y)
 
-            if self.__map.is_position_inside_map(position):
+            if self.__map.is_position_inside_map(position) and self.__map.at(position) != Map.Position.WALL:
                 fittness += functools.reduce(lambda a, b: a + b, self.__map.read_udm_sensors(*position))
             else:
-                fittness -= 50
+                fittness -= 25
             if number_of_moves == self.__drone.battery:
                 break
 
@@ -57,14 +57,15 @@ class Individual:
             # perform a mutation with respect to the representation
             first_gene_index, second_gene_index = utils.generate_different_random_numbers(0, len(self.__chromosome) - 1)
             self.__chromosome[first_gene_index], self.__chromosome[second_gene_index] = self.__chromosome[second_gene_index], self.__chromosome[first_gene_index]
+            self.__chromosome = self.__map.fix_chromosome(self.__chromosome, self.__drone.position)
 
     def crossover(self, other_parent: 'Individual', crossover_probability: float = utils.INDIVIDUAL_CROSSOVER_PROBABILITY) -> Optional[Tuple['Individual', 'Individual']]:
         if random() < crossover_probability:
             offspring1, offspring2 = Individual(self.__map, self.__drone, self.__size), Individual(self.__map, self.__drone, self.__size)
             # perform the crossover between the self and the otherParent
             split_index = randint(int((self.__size - 1) / 4), int(3 * (self.__size - 1) / 4))
-            offspring1.__chromosome = self.__chromosome[:split_index] + other_parent.__chromosome[split_index:]
-            offspring2.__chromosome = other_parent.__chromosome[:split_index] + self.__chromosome[split_index:]
+            offspring1.__chromosome = self.__map.fix_chromosome(self.__chromosome[:split_index] + other_parent.__chromosome[split_index:], self.__drone.position)
+            offspring2.__chromosome = self.__map.fix_chromosome(other_parent.__chromosome[:split_index] + self.__chromosome[split_index:], self.__drone.position)
             return offspring1, offspring2
 
         return None

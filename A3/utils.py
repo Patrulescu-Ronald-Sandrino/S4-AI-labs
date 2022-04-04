@@ -43,12 +43,12 @@ DEFAULT_SCREEN_DIMENSION = (400, 400)
 # DEFAULT_POPULATION_SIZE = 40
 # DEFAULT_INDIVIDUAL_SIZE = 10
 # DEFAULT_GENERATION_COUNT = 100
-# DEFAULT_NUMBER_OF_ITERATIONS = 100  # 94
+# DEFAULT_NUMBER_OF_ITERATIONS = 100
 
 DEFAULT_POPULATION_SIZE = 40
-DEFAULT_INDIVIDUAL_SIZE = 30
-DEFAULT_GENERATION_COUNT = 40
-DEFAULT_NUMBER_OF_ITERATIONS = 50  # 94
+DEFAULT_INDIVIDUAL_SIZE = 20
+DEFAULT_GENERATION_COUNT = 10
+DEFAULT_NUMBER_OF_ITERATIONS = 20
 
 DEFAULT_SEED = 10
 
@@ -82,7 +82,7 @@ def generate_different_random_numbers(start: int, end: int, max_number_of_iterat
     second: int = random_int(start, end)
     iterations_done: int = 0
 
-    while first != second and iterations_done <= max_number_of_iterations:
+    while first == second and iterations_done <= max_number_of_iterations:
         iterations_done += 1
         second = random_int(start, end)
 

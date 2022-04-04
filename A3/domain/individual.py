@@ -12,7 +12,7 @@ class Individual:
         self.__map = map
         self.__drone = drone
         self.__size = size
-        self.__chromosome = [randint(0, 3) for _ in range(self.__size)]
+        self.__chromosome = self.__map.fix_chromosome([randint(0, 3) for _ in range(self.__size)], self.__drone.position)
         self.__fitness: int = -1
 
     def get_path(self) -> List[Tuple[int, int]]:

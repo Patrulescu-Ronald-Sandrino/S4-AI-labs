@@ -9,3 +9,127 @@ Crossover probability = 0.80
 Duration = 28.6185040473938
 Average of averages = 219.780
 std. dev. of averages = 14.356
+
+2022-04-04 21:27:10.062305:
+Seeds = [1, 10]
+Population size = 40
+Individual size = 25
+Generation count = 15
+Number of iterations = 20
+Mutation probability = 0.05
+Crossover probability = 0.80
+Duration = 16.796510457992554
+Average of averages = 112.405
+std. dev. of averages = 18.972
+
+2022-04-04 21:34:06.465295:
+Seeds = [1, 10]
+Population size = 40
+Individual size = 25
+Generation count = 15
+Number of iterations = 20
+Mutation probability = 0.05
+Crossover probability = 0.80
+Best fitness = 202.00
+Best path = [(5, 5), (4, 5), (4, 6), (3, 6), (2, 6), (1, 6), (1, 5), (1, 4), (1, 3), (0, 3), (0, 2), (1, 2), (1, 1), (1, 0), (2, 0)]
+Duration = 19.27814531326294
+Average of averages = 161.600
+std. dev. of averages = 20.743
+
+2022-04-04 21:36:14.918399:
+Seeds = [1, 10]
+Population size = 40
+Individual size = 20
+Generation count = 15
+Number of iterations = 30
+Mutation probability = 0.05
+Crossover probability = 0.80
+Best fitness = 251.00
+Best path = [(5, 5), (4, 5), (3, 5), (2, 5), (1, 5), (0, 5), (0, 6), (0, 7), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7)]
+Duration = 25.934130430221558
+Average of averages = 233.915
+std. dev. of averages = 20.211
+
+2022-04-04 21:39:12.955686:
+Seeds = [1, 10]
+Population size = 40
+Individual size = 10
+Generation count = 100
+Number of iterations = 20
+Mutation probability = 0.05
+Crossover probability = 0.80
+Best fitness = 132.00
+Best path = [(5, 5), (4, 5), (4, 4), (4, 3), (3, 3), (2, 3), (1, 3), (1, 2), (2, 2)]
+Duration = 83.33776450157166
+Average of averages = 122.900
+std. dev. of averages = 14.356
+
+2022-04-04 21:42:09.773912:
+Seeds = [1, 30]
+Population size = 40
+Individual size = 10
+Generation count = 10
+Number of iterations = 20
+Mutation probability = 0.05
+Crossover probability = 0.80
+Last generation average = 91.08
+Best fitness = 103.00
+Best path = [(5, 5), (4, 5), (4, 4), (4, 3), (3, 3), (3, 2), (2, 2), (2, 3)]
+Duration = 18.119174242019653
+Average of averages = 92.302
+std. dev. of averages = 17.992
+
+2022-04-04 21:48:57.881941:
+Seeds = [1, 30]
+Population size = 40
+Individual size = 10
+Generation count = 10
+Number of iterations = 20
+Mutation probability = 0.05
+Crossover probability = 0.80
+Duration = 29.699238777160645
+Average of averages = 145.824
+std. dev. of averages = 10.657
+
+2022-04-04 21:50:40.395754:
+Seeds = [1, 30]
+Population size = 40
+Individual size = 10
+Generation count = 10
+Number of iterations = 20
+Mutation probability = 0.05
+Crossover probability = 0.80
+Duration = 16.91071105003357
+Average of averages = 78.268
+std. dev. of averages = 11.139
+
+2022-04-04 21:51:36.523959:
+Seeds = [1, 30]
+Population size = 40
+Individual size = 10
+Generation count = 10
+Number of iterations = 20
+Mutation probability = 0.05
+Crossover probability = 0.80
+Last generation average = 111.60
+Best fitness = 135.00
+Best path = [(5, 5), (5, 6), (5, 7), (5, 8), (5, 9), (4, 9), (3, 9), (3, 8), (2, 8)]
+Duration = 19.279724836349487
+Average of averages = 94.183
+std. dev. of averages = 13.057
+
+2022-04-04 21:56:08.173868:
+Seeds = [1, 30]
+Population size = 40
+Individual size = 10
+Generation count = 10
+Number of iterations = 20
+Mutation probability = 0.05
+Crossover probability = 0.80
+Last generation average = 110.00
+Best fitness = 151.00
+Best path = [(5, 5), (5, 4), (5, 3), (6, 3), (6, 4), (7, 4), (7, 5), (8, 5), (8, 6)]
+Duration = 36.69411826133728
+Average of averages = 116.972
+std. dev. of averages = 12.237
+

@@ -1,4 +1,5 @@
 import functools
+import sys
 from random import random, randint
 from typing import Tuple, Optional, List
 
@@ -8,12 +9,13 @@ from domain.map import Map
 
 
 class Individual:
+    # note: after modifying the chromosome, compute the fitness
     def __init__(self, map: Map, drone: Drone, size: int = 0):
         self.__map = map
         self.__drone = drone
         self.__size = size
         self.__chromosome = self.__map.fix_chromosome([randint(0, 3) for _ in range(self.__size)], self.__drone.position)
-        self.__fitness: int = -1
+        self.__fitness: int = self.compute_fitness()
 
     def get_path(self) -> List[Tuple[int, int]]:
         path: List[Tuple[int, int]] = [(self.__drone.x, self.__drone.y)]
@@ -24,8 +26,15 @@ class Individual:
 
         return path
 
+    @staticmethod
+    def individuals_to_str(individuals: List['Individual']) -> str:
+        return str([(index, individual.fitness) for index, individual in enumerate(individuals)])
+
     @property
     def fitness(self) -> int:
+        # if self.__fitness == -sys.maxsize - 1:
+        #     self.compute_fitness()
+        self.compute_fitness()
         return self.__fitness
 
     def compute_fitness(self) -> int:

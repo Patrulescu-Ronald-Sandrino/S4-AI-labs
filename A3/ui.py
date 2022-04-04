@@ -174,7 +174,7 @@ class UI:
         best_individuals, averages, duration = self.__controller.solver(DEFAULT_SEED)
 
         print("It took: {} seconds".format(duration))
-        best_individuals.sort(key=lambda individual: individual.fitness, reverse=True)
+        # best_individuals.sort(key=lambda individual: individual.fitness, reverse=True)  # moved to self.__controller.solver()
         # choose top 3/5  # TODO but why top 3/5?
         self.__plot_graph(averages)
 

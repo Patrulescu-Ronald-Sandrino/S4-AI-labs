@@ -111,9 +111,8 @@ class Controller:
             self.__perform_generation_iterations(population, DEFAULT_NUMBER_OF_ITERATIONS)
 
             best_individual = population.selection(1)[0]  # NOTE: selection also performs fitness evaluation
-            # print("seed {} gen {} best_individual {}".format(current_seed, generation, best_individual.compute_fitness()))
-            pop = [(index, individual.fitness) for index, individual in enumerate(population.individuals)]
-            print("seed: {}, gen: {}, best_individual: {}, population: {}".format(current_seed, generation, best_individual.compute_fitness(), pop))
+            # pop = [(index, individual.fitness) for index, individual in enumerate(population.individuals)]
+            # print("seed: {}, gen: {}, best_individual: {}, population: {}".format(current_seed, generation, best_individual.compute_fitness(), pop))
 
         last_fitness_average: float = np.average([individual.fitness for individual in population.get_individuals()])
         # print("last_fitness_average = ", last_fitness_average)
@@ -147,6 +146,8 @@ class Controller:
         duration: float = end_time - start_time
 
         self.__best_individuals, self.__averages, self.__duration = best_individuals, averages, duration
+        self.__best_individuals.sort(key=lambda individual: individual.fitness, reverse=True)
+        # print("Individual.individuals_to_str(self.__best_individuals)", Individual.individuals_to_str(self.__best_individuals))
         self.log_statistics_to_file(seed)
         return best_individuals, averages, duration
 
@@ -161,6 +162,9 @@ class Controller:
         result += "Number of iterations = %d\n" % self.__number_of_iterations
         result += "Mutation probability = %.2f\n" % INDIVIDUAL_MUTATION_PROBABILITY
         result += "Crossover probability = %.2f\n" % INDIVIDUAL_CROSSOVER_PROBABILITY
+        result += "Last generation average = %.2f\n" % self.__averages[-1]
+        result += "Best fitness = %.2f\n" % (self.__best_individuals[0].fitness if len(self.__best_individuals) > 0 else "None")
+        result += "Best path = %s\n" % (self.__best_individuals[0].get_path() if len(self.__best_individuals) > 0 else "None")
         result += "Duration = %s\n" % self.__duration
         result += "Average of averages = %.3f\n" % numpy.average(self.__averages)
         result += "std. dev. of averages = %.3f\n" % numpy.std(self.__averages)
@@ -176,8 +180,8 @@ class Controller:
         result += self.statistics_to_str()
 
         try:
-            with open(filepath, 'w') as file:
-                file.write(result)
+            with open(filepath, 'a') as file:
+                file.write(result + "\n")
         except OSError as e:
             sys.stderr.write("[error][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function, e))
             raise Exception("Failed to log statistics to file")

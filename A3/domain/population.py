@@ -23,7 +23,7 @@ class Population:
         # perform a selection of k individuals from the population
         # and returns that selection
         self.evaluate()
-        return sorted(self.__individuals, key=lambda individual: individual.compute_fitness(), reverse=True)[:k]
+        return sorted(self.__individuals, key=lambda individual: individual.fitness, reverse=True)[:k]
 
     def set_individuals(self, individuals: List[Individual]) -> None:
         self.__individuals = individuals

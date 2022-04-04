@@ -16,6 +16,10 @@ class Drone:
         return self.__y
 
     @property
+    def position(self) -> Tuple[int, int]:
+        return self.__x, self.__y
+
+    @property
     def battery(self) -> int:
         return self.__battery
 

@@ -69,6 +69,7 @@ class Controller:
         individuals: List[Individual] = population.get_individuals()
 
         first_parent_index, second_parent_index = utils.generate_different_random_numbers(0, len(individuals) - 1)
+        # print("parent indices: ", first_parent_index, second_parent_index)
         first_parent: Individual = individuals[first_parent_index]
         second_parent: Individual = individuals[first_parent_index]
 
@@ -110,6 +111,9 @@ class Controller:
             self.__perform_generation_iterations(population, DEFAULT_NUMBER_OF_ITERATIONS)
 
             best_individual = population.selection(1)[0]  # NOTE: selection also performs fitness evaluation
+            # print("seed {} gen {} best_individual {}".format(current_seed, generation, best_individual.compute_fitness()))
+            pop = [(index, individual.fitness) for index, individual in enumerate(population.individuals)]
+            print("seed: {}, gen: {}, best_individual: {}, population: {}".format(current_seed, generation, best_individual.compute_fitness(), pop))
 
         last_fitness_average: float = np.average([individual.fitness for individual in population.get_individuals()])
         # print("last_fitness_average = ", last_fitness_average)

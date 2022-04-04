@@ -11,6 +11,10 @@ class Population:
         self.__individuals = [Individual(map, drone, individual_size) for _ in range(population_size)]
         # TODO: MAYBE self.evaluate()
 
+    @property
+    def individuals(self) -> List[Individual]:
+        return self.__individuals[:]
+
     def evaluate(self) -> List[Tuple[Individual, float]]:
         # evaluates the population
         return [(individual, individual.compute_fitness()) for individual in self.__individuals]
@@ -29,3 +33,5 @@ class Population:
 
     def add_individual(self, individual: Individual) -> None:
         self.__individuals.append(individual)
+
+

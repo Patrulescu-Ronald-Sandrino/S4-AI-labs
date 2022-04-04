@@ -135,3 +135,18 @@ class Map:
 
         return readings
 
+    def fix_chromosome(self, chromosome: List[int], start_position: Tuple[int, int]) -> List[int]:
+        fixed_chromosome = []
+        visited = {start_position: True}
+        x, y = start_position
+
+        for direction_index in chromosome:
+            delta_x, delta_y = utils.DIRECTIONS[direction_index]
+            new_position = new_x, new_y = x + delta_x, y + delta_y
+
+            if self.is_position_inside_map(new_position) and self[new_x][new_y] != self.Position.WALL and new_position not in visited:
+                (x, y) = new_position
+                visited[(x, y)] = True
+                fixed_chromosome.append(direction_index)
+
+        return fixed_chromosome

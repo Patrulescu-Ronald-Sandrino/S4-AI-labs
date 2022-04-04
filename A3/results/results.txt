@@ -1,11 +1,11 @@
-2022-04-04 18:16:56.633299:
+2022-04-04 21:02:57.437141:
 Seeds = [1, 10]
 Population size = 40
-Individual size = 30
-Generation count = 40
-Number of iterations = 50
+Individual size = 20
+Generation count = 10
+Number of iterations = 20
 Mutation probability = 0.05
 Crossover probability = 0.80
-Duration = 151.2414710521698
-Average of averages = 356.400
-std. dev. of averages = 25.823
+Duration = 49.30242037773132
+Average of averages = 107.398
+std. dev. of averages = 13.057

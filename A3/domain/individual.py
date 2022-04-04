@@ -1,6 +1,6 @@
 import functools
 from random import random, randint
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 import utils
 from domain.drone import Drone
@@ -14,6 +14,15 @@ class Individual:
         self.__size = size
         self.__chromosome = [randint(0, 3) for _ in range(self.__size)]
         self.__fitness: int = -1
+
+    def get_path(self) -> List[Tuple[int, int]]:
+        path: List[Tuple[int, int]] = [(self.__drone.x, self.__drone.y)]
+        for gene in self.__chromosome:
+            last_x, last_y = path[-1]
+            delta_x, delta_y = utils.DIRECTIONS[gene]
+            path.append((last_x + delta_x, last_y + delta_y))
+
+        return path
 
     @property
     def fitness(self) -> int:

@@ -2,14 +2,13 @@
 
 
 # imports
-import math
 from typing import Callable
 
 import matplotlib.pyplot
 from PIL import Image
 
 from controller import *
-from gui import moving_drone
+from gui import *
 from repository import *
 
 
@@ -184,11 +183,8 @@ class UI:
         Image.open(self.__plot_graph_file_path).show()  # https://www.geeksforgeeks.org/python-pil-image-open-method/
 
     def __view_drone_moving(self):
-        not_implemented()
-        return
-
-        # individuals, _, _ = self.__controller.get_results()
-        # moving_drone(self.__controller.map, individuals[0].)
+        individuals, _, _ = self.__controller.get_results()
+        moving_drone3(self.__controller.map, individuals[0].get_path())
 
 
 Command.EXIT = Command("Exit", UI._set_exit)  # pass methods as arguments

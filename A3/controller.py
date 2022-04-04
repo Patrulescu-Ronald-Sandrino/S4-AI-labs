@@ -143,33 +143,33 @@ class Controller:
         duration: float = end_time - start_time
 
         self.__best_individuals, self.__averages, self.__duration = best_individuals, averages, duration
-        self.log_statistics_to_file(averages, duration, seed, self.__population_size, self.__individual_size, self.__generation_count, self.__number_of_iterations)
+        self.log_statistics_to_file(seed)
         return best_individuals, averages, duration
 
     def get_results(self) -> Tuple[List[Individual], List[float], float]:
         return self.__best_individuals, self.__averages, self.__duration
 
-    @staticmethod
-    def log_statistics_to_file(averages: List[float],
-                               duration: float,
+    def statistics_to_str(self) -> str:
+        result: str = ""
+        result += "Population size = %d\n" % self.__population_size
+        result += "Individual size = %d\n" % self.__individual_size
+        result += "Generation count = %d\n" % self.__generation_count
+        result += "Number of iterations = %d\n" % self.__number_of_iterations
+        result += "Mutation probability = %.2f\n" % INDIVIDUAL_MUTATION_PROBABILITY
+        result += "Crossover probability = %.2f\n" % INDIVIDUAL_CROSSOVER_PROBABILITY
+        result += "Duration = %s\n" % self.__duration
+        result += "Average of averages = %.3f\n" % numpy.average(self.__averages)
+        result += "std. dev. of averages = %.3f\n" % numpy.std(self.__averages)
+
+        return result
+
+    def log_statistics_to_file(self,
                                last_seed: int,
-                               population_size: int,
-                               individual_size: int,
-                               generation_count: int,
-                               number_of_iterations: int,
-                               filepath="results/results.txt"):
+                               filepath="results/results.txt") -> None:
         result: str = ""
         result += "%s:\n" % datetime.datetime.now()
         result += "Seeds = [%d, %d]\n" % (1, last_seed)
-        result += "Population size = %d\n" % population_size
-        result += "Individual size = %d\n" % individual_size
-        result += "Generation count = %d\n" % generation_count
-        result += "Number of iterations = %d\n" % number_of_iterations
-        result += "Mutation probability = %.2f\n" % INDIVIDUAL_MUTATION_PROBABILITY
-        result += "Crossover probability = %.2f\n" % INDIVIDUAL_CROSSOVER_PROBABILITY
-        result += "Duration = %s\n" % duration
-        result += "Average of averages = %.3f\n" % numpy.average(averages)
-        result += "std. dev. of averages = %.3f\n" % numpy.std(averages)
+        result += self.statistics_to_str()
 
         try:
             with open(filepath, 'w') as file:

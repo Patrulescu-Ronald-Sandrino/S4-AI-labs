@@ -6,6 +6,7 @@ import math
 from typing import Callable
 
 import matplotlib.pyplot
+from PIL import Image
 
 from controller import *
 from gui import moving_drone
@@ -74,6 +75,7 @@ class UI:
     def __init__(self, controller: Controller):
         self.__exit = False
         self.__controller = controller
+        self.__plot_graph_file_path = "results/average-population-fittness.png"
 
     def _set_exit(self) -> None:
         self.__exit = True
@@ -85,17 +87,24 @@ class UI:
                                                                                     .add(Command.EXIT)
                                                                                     .add(Command("Create random map",
                                                                                                  UI.__create_random_map))
-                                                                                    .add(Command("Load map", UI.__load_map))
-                                                                                    .add(Command("Save map", UI.__save_map))
-                                                                                    .add(Command("Visualize map", UI.__visualize_map))
+                                                                                    .add(
+            Command("Load map", UI.__load_map))
+                                                                                    .add(
+            Command("Save map", UI.__save_map))
+                                                                                    .add(
+            Command("Visualize map", UI.__visualize_map))
                                                                                     .add(Command.BACK)
                                                                                     )))("Map Menu"))
                     .add((lambda menu_name: Command(menu_name, lambda ui: ui.__loop(Menu(menu_name)
                                                                                     .add(Command.EXIT)
-                                                                                    .add(Command("Parameters setup", UI.__parameters_setup))
-                                                                                    .add(Command("Run the solver", UI.__run_solver))
-                                                                                    .add(Command("Visualize the statistics", UI.__visualize_statistics))
-                                                                                    .add(Command("View the drone moving on a path", UI.__view_drone_moving))
+                                                                                    .add(
+            Command("Parameters setup", UI.__parameters_setup))
+                                                                                    .add(
+            Command("Run the solver", UI.__run_solver))
+                                                                                    .add(
+            Command("Visualize the statistics", UI.__visualize_statistics))
+                                                                                    .add(
+            Command("View the drone moving on a path", UI.__view_drone_moving))
                                                                                     .add(Command.BACK)
                                                                                     )))("EA Menu"))
                     )
@@ -116,7 +125,8 @@ class UI:
         print("Success: Created and set random map!")
 
     def __load_map(self):
-        map_file_path = input("Enter path to the map file (enter 1 to quit)(press Enter - use default file: assets/test.map): ")
+        map_file_path = input(
+            "Enter path to the map file (enter 1 to quit)(press Enter - use default file: assets/test.map): ")
         if map_file_path == "":
             map_file_path = "assets/test.map"
         elif map_file_path == "1":
@@ -128,7 +138,8 @@ class UI:
             print("Failure: Couldn't load map from file " + map_file_path)
 
     def __save_map(self):
-        map_file_path = input("Enter path to the map file (enter 1 to quit)(press Enter - use default file: assets/test.map): ")
+        map_file_path = input(
+            "Enter path to the map file (enter 1 to quit)(press Enter - use default file: assets/test.map): ")
         if map_file_path == "":
             map_file_path = "assets/test.map"
         elif map_file_path == "1":
@@ -154,24 +165,30 @@ class UI:
 
         print("Success: Parameters were set!")
 
-    @staticmethod
-    def __plot_graph(averages, filepath: str = "results/average-population-fittness.png"):
+    def __plot_graph(self, averages, filepath: str = ""):
+        if filepath != "":
+            self.__plot_graph_file_path = filepath
         matplotlib.pyplot.plot(averages)
-        matplotlib.pyplot.savefig(filepath)
+        matplotlib.pyplot.savefig(self.__plot_graph_file_path)
 
     def __run_solver(self):
         best_individuals, averages, duration = self.__controller.solver(DEFAULT_SEED)
 
-        best_individuals.sort(key=lambda individual: individual.get_fitness(), reverse=True)
+        print("It took: {} seconds".format(duration))
+        best_individuals.sort(key=lambda individual: individual.fitness, reverse=True)
         # choose top 3/5  # TODO but why top 3/5?
         self.__plot_graph(averages)
 
     def __visualize_statistics(self):
-        not_implemented()
+        print(self.__controller.statistics_to_str())
+        Image.open(self.__plot_graph_file_path).show()  # https://www.geeksforgeeks.org/python-pil-image-open-method/
 
     def __view_drone_moving(self):
-        individuals, _, _ = self.__controller.get_results()
-        moving_drone(self.__controller.map, individuals[0].)
+        not_implemented()
+        return
+
+        # individuals, _, _ = self.__controller.get_results()
+        # moving_drone(self.__controller.map, individuals[0].)
 
 
 Command.EXIT = Command("Exit", UI._set_exit)  # pass methods as arguments

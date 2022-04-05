@@ -7,6 +7,7 @@ import sys
 import time
 from typing import List, Tuple, Any, Optional
 
+import matplotlib
 import numpy
 import numpy as np
 
@@ -32,6 +33,12 @@ class Controller:
         self.__best_individuals: List[Individual] = []
         self.__averages: List[float] = []
         self.__duration: float = 0
+
+        self.__best_individuals_in_1_run: List[int] = []
+
+    @property
+    def get_best_individuals_in_1_run(self) -> List[int]:
+        return self.__best_individuals_in_1_run
 
     @property
     def map(self) -> Map:
@@ -111,8 +118,10 @@ class Controller:
             self.__perform_generation_iterations(population, DEFAULT_NUMBER_OF_ITERATIONS)
 
             best_individual = population.selection(1)[0]  # NOTE: selection also performs fitness evaluation
-            # pop = [(index, individual.fitness) for index, individual in enumerate(population.individuals)]
-            # print("seed: {}, gen: {}, best_individual: {}, population: {}".format(current_seed, generation, best_individual.compute_fitness(), pop))
+            if current_seed == 1:
+                self.__best_individuals_in_1_run.append(best_individual.fitness)
+            pop = [(index, individual.fitness) for index, individual in enumerate(population.individuals)]
+            print("seed: {}, gen: {}, best_individual: {}, population: {}".format(current_seed, generation, best_individual.compute_fitness(), pop))
 
         last_fitness_average: float = np.average([individual.fitness for individual in population.get_individuals()])
         # print("last_fitness_average = ", last_fitness_average)
@@ -137,6 +146,9 @@ class Controller:
         # print("{:>{}}{:>8}{:>8}".format("Seed", align, "Average", "Best fitness"))
         print("{:>12}{:>12}{:>15}".format("Seed", "Average", "Best fitness"))
         for current_seed in range(1, seed + 1):
+            if current_seed == 2:
+                matplotlib.pyplot.plot(self.__best_individuals_in_1_run)
+                matplotlib.pyplot.savefig("results/average-population-fittness.png")
             best_individual, average = self.run(current_seed)
             # print("{:>{}}{:8.2f}{:8.2f}".format(current_seed, align, average, best_individual.fitness))
             print("{:>12}{:12.2f}{:15.2f}".format(current_seed, average, best_individual.fitness))
@@ -166,8 +178,8 @@ class Controller:
         result += "Best fitness = %.2f\n" % (self.__best_individuals[0].fitness if len(self.__best_individuals) > 0 else "None")
         result += "Best path = %s\n" % (self.__best_individuals[0].get_path() if len(self.__best_individuals) > 0 else "None")
         result += "Duration = %s\n" % self.__duration
-        result += "Average of averages = %.3f\n" % numpy.average(self.__averages)
-        result += "std. dev. of averages = %.3f\n" % numpy.std(self.__averages)
+        result += "Average of best fittness = %.3f\n" % numpy.average([individual.fitness for individual in self.__best_individuals])
+        result += "std. dev. of fittness = %.3f\n" % numpy.std([individual.fitness for individual in self.__best_individuals])
 
         return result
 
@@ -185,3 +197,4 @@ class Controller:
         except OSError as e:
             sys.stderr.write("[error][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function, e))
             raise Exception("Failed to log statistics to file")
+

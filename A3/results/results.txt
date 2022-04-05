@@ -133,3 +133,48 @@ Duration = 36.69411826133728
 Average of averages = 116.972
 std. dev. of averages = 12.237
 
+2022-04-05 13:16:20.767245:
+Seeds = [1, 30]
+Population size = 150
+Individual size = 5
+Generation count = 10
+Number of iterations = 70
+Mutation probability = 0.05
+Crossover probability = 0.80
+Last generation average = 101.01
+Best fitness = 120.00
+Best path = [(11, 12), (11, 13), (10, 13), (9, 13), (9, 14), (9, 15)]
+Duration = 128.3364315032959
+Average of averages = 100.676
+std. dev. of averages = 5.769
+
+2022-04-05 13:25:13.554928:
+Seeds = [1, 30]
+Population size = 150
+Individual size = 25
+Generation count = 10
+Number of iterations = 70
+Mutation probability = 0.05
+Crossover probability = 0.80
+Last generation average = 246.14
+Best fitness = 316.00
+Best path = [(5, 5), (4, 5), (4, 6), (3, 6), (3, 7), (3, 8), (3, 9), (4, 9), (5, 9), (6, 9), (6, 8), (7, 8), (7, 7), (7, 6), (8, 6), (8, 5), (7, 5), (6, 5), (6, 4)]
+Duration = 373.6850862503052
+Average of averages = 258.858
+std. dev. of averages = 10.214
+
+2022-04-05 14:08:42.936588:
+Seeds = [1, 30]
+Population size = 150
+Individual size = 25
+Generation count = 10
+Number of iterations = 70
+Mutation probability = 0.05
+Crossover probability = 0.80
+Last generation average = 142.67
+Best fitness = 183.00
+Best path = [(5, 5), (5, 4), (4, 4), (4, 5), (4, 6), (3, 6), (2, 6), (1, 6), (1, 5), (1, 4), (1, 3), (1, 2), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (6, 0)]
+Duration = 298.4330298900604
+Average of best fittness = 153.333
+std. dev. of fittness = 12.854
+

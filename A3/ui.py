@@ -164,10 +164,10 @@ class UI:
 
         print("Success: Parameters were set!")
 
-    def __plot_graph(self, averages, filepath: str = ""):
+    def __plot_graph(self, best_individuals_in_1_run, filepath: str = ""):
         if filepath != "":
             self.__plot_graph_file_path = filepath
-        matplotlib.pyplot.plot(averages)
+        matplotlib.pyplot.plot(best_individuals_in_1_run)
         matplotlib.pyplot.savefig(self.__plot_graph_file_path)
 
     def __run_solver(self):
@@ -176,12 +176,14 @@ class UI:
         print("It took: {} seconds".format(duration))
         # best_individuals.sort(key=lambda individual: individual.fitness, reverse=True)  # moved to self.__controller.solver()
         # choose top 3/5  # TODO but why top 3/5?
-        self.__plot_graph(averages)
+        # self.__plot_graph(self.__controller.get_best_individuals_in_1_run)
 
     def __visualize_statistics(self):
         print(self.__controller.statistics_to_str())
         Image.open(self.__plot_graph_file_path).show()  # https://www.geeksforgeeks.org/python-pil-image-open-method/
 
+    # avg, std dev per 30 runs best fitness
+    # graphic for avg of best fitness in every iteration in 1 run
     def __view_drone_moving(self):
         individuals, _, _ = self.__controller.get_results()
         moving_drone3(self.__controller.map, individuals[0].get_path())

@@ -1,12 +1,17 @@
+import inspect
 from typing import Tuple
 
 from domain.position import Position
 
 
 class Drone:
-    def __init__(self, x: int, y: int, battery: int):
-        self.__position: Position = Position(x, y)
-        self.__battery: int = battery
+    def __init__(self, position: Position, energy: int):
+        self.__position: Position = position
+        if energy < 0:
+            raise ValueError("[error][{}.{}()] Failed to create drone: {}\n".format(__class__,
+                                                                                    inspect.stack()[0].function,
+                                                                                    "Energy must be >= 0"))
+        self.__energy: int = energy
 
     @property
     def position(self) -> Tuple[int, int]:
@@ -17,5 +22,5 @@ class Drone:
         self.__position = position
 
     @property
-    def battery(self) -> int:
-        return self.__battery
+    def energy(self) -> int:
+        return self.__energy

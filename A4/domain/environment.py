@@ -1,17 +1,11 @@
-import inspect
-import pickle
-import random
-from typing import Tuple
-
-import numpy as np
-import texttable
-
-from domain.constants import MAP_ROWS, MAP_COLUMNS, MapPosition, MAP_FILL
-from domain.position import Position
+from domain.drone import Drone
+from domain.map import Map
 
 
 class Environment:
-    pass
+    def __init__(self, map_: Map, drone: Drone):
+        self.__map = map_
+        self.__drone = drone
 
 
 

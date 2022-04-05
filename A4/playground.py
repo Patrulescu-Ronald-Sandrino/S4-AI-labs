@@ -1,7 +1,14 @@
+from typing import Optional
+
+
 def main():
+    pass
     # string_parsing()
     # read_line()
-    equality()
+    # equality()
+    # lazy_evaluation()  # result: lazy evaluation is performed
+    # range_values()
+    # type_hints_redeclaration()
 
 
 def string_parsing():
@@ -50,6 +57,39 @@ def equality():
     b_list = [b1, b2]
     for b in b_list:
         print("b == B(2, 3)", b == B(2, 3))
+
+    a: int = 2
+    print("a=", a, sep="")
+    a: str = "Abc"
+    print("a=", a, sep="")
+
+
+def lazy_evaluation():
+    if True or print(2):
+        print("passed if")
+
+
+def range_values():
+    for _ in range(2, 0):
+        print("inside for:", _)
+    print("outside for")
+
+
+def type_hints_redeclaration():
+    a: Optional[int] = None
+    print(a, type(a))
+
+    a = 2
+    print(a, type(a))
+
+    a: str = ""
+    print(a, type(a))
+
+    a: int = 4
+    print(a, type(a))
+
+    a = None
+    print(a, type(a))
 
 
 if __name__ == "__main__":

@@ -7,8 +7,10 @@ from typing import List
 import numpy as np
 import texttable
 
-from domain.constants import MapPosition, MAP_FILL, MAP_ROWS, MAP_COLUMNS, MAP_FILEPATH
-from domain.position import Position
+from domain.constants import MapPosition, MAP_FILL, MAP_ROWS, MAP_COLUMNS, MAP_FILEPATH, MAX_SENSOR_ENERGY, Direction, \
+    MIN_SENSOR_ENERGY
+from domain.position import Position, POSITION_INVALID
+from tools import Math
 
 
 class Map:
@@ -24,7 +26,8 @@ class Map:
         self.__rows: int = rows
         self.__columns: int = columns
         self.__surface = np.zeros((self.__rows, self.__columns))
-        self.__sensors = {}  # type Dict[Position, int]
+        self.__sensors = {}  # type Dict[Position, List[int]]  # if a value in the list is -1 => it's not computed.
+        # Has length == 1 + MAX_SENSOR_ENERGY
 
     @property
     def rows(self) -> int:
@@ -34,7 +37,7 @@ class Map:
     def columns(self) -> int:
         return self.__columns
 
-    def is_position_valid(self, position: Position) -> bool:
+    def is_position_inside_map(self, position: Position) -> bool:
         """
         NOTE: use together with raise IndexError
         :param position:
@@ -43,31 +46,98 @@ class Map:
         return position.x < self.__columns and position.y < self.__rows
 
     def at(self, position: Position) -> MapPosition:
-        if not self.is_position_valid(position):
+        if not self.is_position_inside_map(position):
             raise IndexError("[error][{}.{}()] Failed to access map position: {}\n".format(__class__,
                                                                                            inspect.stack()[0].function,
                                                                                            "Position not in map range"))
         return self.__surface[position.x][position.y]
 
-    def add_sensors(self, sensors_positions_tuples: List[Position]) -> None:
-        """adds only sensors with a valid position or which don't exist"""
-        for index, (sensor_x, sensor_y) in enumerate(sensors_positions_tuples):
+    def get_number_of_sensors(self) -> int:
+        return len(self.__sensors)
+
+    def add_sensors(self, sensors_positions: List[Position]) -> None:
+        """
+        adds sensors that are in map range, do not exist already and do not overlap a wall.
+        also computes the max # of squares that can be seen in any direction
+        """
+        for index, (sensor_x, sensor_y) in enumerate(sensors_positions):
             sensor_position: Position = Position(sensor_x, sensor_y)
 
-            if self.is_position_valid(sensor_position):
+            if self.is_position_inside_map(sensor_position):
+                # if self.at(sensor_position) == MapPosition.SENSOR: # or this
                 if sensor_position in self.__sensors:
                     sys.stderr.write("[warn][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function,
                                                                    "Position: " + str((sensor_x, sensor_y)) +
-                                                                   " at index: " + index + " is skipped: Sensor with "
-                                                                   "that position is already present."))
+                                                                   " at index: " + index + " is skipped: it is already "
+                                                                                           "a sensor."))
+
+                elif self.at(sensor_position) == MapPosition.WALL:
+                    sys.stderr.write("[warn][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function,
+                                                                   "Position: " + str((sensor_x, sensor_y)) +
+                                                                   " at index: " + index + " is skipped: it is a wall.")
+                                     )
 
                 else:
-                    self.__sensors[sensor_position] = 0
+                    self.__sensors[sensor_position] = self.compute_sensor_gains(sensor_position)
                     self.__surface[sensor_x][sensor_y] = MapPosition.SENSOR
             else:
                 sys.stderr.write("[warn][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function,
                                                                "Position: " + str((sensor_x, sensor_y)) + " at index: "
                                                                + index + " is skipped: invalid position."))
+
+    def compute_sensor_gains(self, sensor_position: Position, last_energy_level: int = MAX_SENSOR_ENERGY) -> List[int]:
+        if Math.out_of_range(last_energy_level, MIN_SENSOR_ENERGY, MAX_SENSOR_ENERGY):
+            raise ValueError("[error][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function, "Invalid value "
+                                                                                                    "for last energy "
+                                                                                                    "level: must be "
+                                                                                                    "in range [{}, "
+                                                                                                    "{}]."
+                                                            .format(MIN_SENSOR_ENERGY, MAX_SENSOR_ENERGY)))
+
+        ### V1
+        # gain: List[int] = [0]
+        # for energy in range(1, last_energy_level + 1):
+        #     squares_seen: int = gain[-1]
+        #
+        #     for direction in Direction:
+        #         potential_visible_position: Position = sensor_position.to(direction, energy)
+        #
+        #         if not self.is_position_inside_map(potential_visible_position) \
+        #                 or self.at(potential_visible_position) == MapPosition.WALL:
+        #             continue
+        #
+        #         squares_seen += 1
+        #
+        #     gain.append(squares_seen)
+        ### V2
+        # gain: List[int] = [0] + [-1 for _ in range(MAX_SENSOR_ENERGY)]
+        # for direction in Direction:
+        #     for energy in range(1, last_energy_level + 1):
+        #         if gain[energy] == -1:
+        #             gain[energy] = gain[energy - 1]
+        #
+        #         potential_visible_position: Position = sensor_position.to(direction, energy)
+        #         if not self.is_position_inside_map(potential_visible_position) \
+        #                 or self.at(potential_visible_position) == MapPosition.WALL:
+        #             break
+        #
+        #         gain[energy] += 1
+        ### V3
+        gain: List[int] = [0]
+        for direction in Direction:
+            for energy in range(1, last_energy_level + 1):
+                if len(gain) == energy:
+                    gain.append(gain[energy - 1])
+
+                potential_visible_position: Position = sensor_position.to(direction, energy)
+                if not self.is_position_inside_map(potential_visible_position) \
+                        or self.at(potential_visible_position) == MapPosition.WALL:
+                    break
+
+                gain[energy] += 1
+        ###
+
+        return gain + [-1 for _ in range(MAX_SENSOR_ENERGY - last_energy_level)]  # (1 + l) + ? = 1 + M => ? = M - l
 
     def randomize(self, fill: float = MAP_FILL) -> 'Map':
         for row in range(self.__rows):
@@ -90,6 +160,7 @@ class Map:
                 self.__rows = loaded_map.__rows
                 self.__columns = loaded_map.__columns
                 self.__surface = loaded_map.__surface
+                self.__sensors = loaded_map.__sensors
             return self
         except OSError as e:
             raise IOError("[error][{}.{}()] Failed to load map: {}\n".format(__class__, inspect.stack()[0].function, e))

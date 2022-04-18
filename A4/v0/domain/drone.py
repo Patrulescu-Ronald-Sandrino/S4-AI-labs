@@ -1,7 +1,7 @@
 import inspect
 from typing import Tuple
 
-from domain.position import Position
+from v0.domain.position import Position
 
 
 class Drone:

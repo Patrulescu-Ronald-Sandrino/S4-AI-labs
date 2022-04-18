@@ -1,5 +1,5 @@
-from domain.drone import Drone
-from domain.map import Map
+from v0.domain.drone import Drone
+from v0.domain.map import Map
 
 
 class Environment:

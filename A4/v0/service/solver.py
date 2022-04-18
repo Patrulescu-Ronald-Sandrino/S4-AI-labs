@@ -2,12 +2,12 @@ import inspect
 import sys
 from typing import Optional, List, Tuple, Union
 
-from domain import constants
-from domain.constants import MIN_NUMBER_OF_SENSORS
-from domain.drone import Drone
-from domain.environment import Environment
-from domain.map import Map
-from domain.position import Position
+from v0.domain import constants
+from v0.domain.constants import MIN_NUMBER_OF_SENSORS
+from v0.domain.drone import Drone
+from v0.domain.environment import Environment
+from v0.domain.map import Map
+from v0.domain.position import Position
 
 
 class Solver:

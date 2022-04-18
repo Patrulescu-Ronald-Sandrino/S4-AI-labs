@@ -7,9 +7,9 @@ from typing import List
 import numpy as np
 import texttable
 
-from domain.constants import MapPosition, MAP_FILL, MAP_ROWS, MAP_COLUMNS, MAP_FILEPATH, MAX_SENSOR_ENERGY, Direction, \
+from v0.domain.constants import MapPosition, MAP_FILL, MAP_ROWS, MAP_COLUMNS, MAP_FILEPATH, MAX_SENSOR_ENERGY, Direction, \
     MIN_SENSOR_ENERGY
-from domain.position import Position, POSITION_INVALID
+from v0.domain.position import Position
 from tools import Math
 
 

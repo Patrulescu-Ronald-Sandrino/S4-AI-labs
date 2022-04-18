@@ -1,7 +1,7 @@
 import inspect
 from typing import Tuple
 
-from domain.constants import MAX_INT, Direction, DIRECTION_DELTA
+from v0.domain.constants import MAX_INT, Direction, DIRECTION_DELTA
 
 
 class Position:
@@ -54,7 +54,7 @@ class Position:
             return POSITION_INVALID
 
     def __eq__(self, other: 'Position') -> bool:
-        return self == other == POSITION_INVALID or (self.__x == other.__x and self.__y == other.__y)
+        return self.__x == other.__x and self.__y == other.__y
 
     def __str__(self):
         return str(self.xy)

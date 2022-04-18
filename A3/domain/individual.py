@@ -70,11 +70,20 @@ class Individual:
             self.__chromosome[first_gene_index], self.__chromosome[second_gene_index] = self.__chromosome[second_gene_index], self.__chromosome[first_gene_index]
             # self.__chromosome = self.__map.fix_chromosome(self.__chromosome, self.__drone.position)
 
+    def mutate2(self, mutate_probability: float = utils.INDIVIDUAL_MUTATION_PROBABILITY) -> None:
+        # performs swap mutation
+        if random() < mutate_probability:
+            for i in range(3):
+                random_index: int = utils.random_int(0, len(self.__chromosome) - 1)
+                self.__chromosome[random_index] = randint(0, 3)
+
     def crossover(self, other_parent: 'Individual', crossover_probability: float = utils.INDIVIDUAL_CROSSOVER_PROBABILITY) -> Optional[Tuple['Individual', 'Individual']]:
         if random() < crossover_probability:
             offspring1, offspring2 = Individual(self.__map, self.__drone, self.__size), Individual(self.__map, self.__drone, self.__size)
             # perform the crossover between the self and the otherParent
-            split_index = randint(int((self.__size - 1) / 4), int(3 * (self.__size - 1) / 4))
+            # split_index = randint(int((self.__size - 1) / 4), int(3 * (self.__size - 1) / 4))
+            split_index = randint(int((self.__size - 1) / 8), int(7 * (self.__size - 1) / 8))
+            # print(int((self.__size - 1) / 4), int(3 * (self.__size - 1) / 4), "split_index=", split_index)
             # offspring1.__chromosome = self.__map.fix_chromosome(self.__chromosome[:split_index] + other_parent.__chromosome[split_index:], self.__drone.position)
             offspring1.__chromosome = self.__chromosome[:split_index] + other_parent.__chromosome[split_index:]
             # offspring2.__chromosome = self.__map.fix_chromosome(other_parent.__chromosome[:split_index] + self.__chromosome[split_index:], self.__drone.position)

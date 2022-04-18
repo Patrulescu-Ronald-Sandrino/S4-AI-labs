@@ -10,8 +10,7 @@ from math import sin, cos, pi, trunc
 
 # IMPORT OBJECT LOADER
 from objloader import *
-from solver import solver
-
+from solver1 import solver
 
 
 def loadTexture():
@@ -289,8 +288,8 @@ class Table():
             for vertex in edge:
                 glVertex3fv(aux[vertex])
         glEnd()
-        
-        
+
+
 
 
 def test():

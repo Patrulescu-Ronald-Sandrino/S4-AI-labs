@@ -41,5 +41,10 @@ DIRECTION_DELTA = {Direction.UP: (0, 1),
                    Direction.LEFT: (-1, 0)}
 
 
+"""Algorithm constants"""
+EPOCHS = 100
+
+
 """Other constants"""
+
 

@@ -112,6 +112,10 @@ def main(n = 8,m = 8,noEpoch = 100,noAnts = 10,alpha = 1.9,beta = 0.9,rho = 0.05
     sol=[]
     bestSol=[]
     trace=[[1 for i in range(n * m)] for j in range (n * m)]
+    # print("trace: ")
+    # for element in trace:
+    #     print(element, " len(element) =", len(element))
+    # print("end-of-trace")
     print("Programul ruleaza! Dureaza ceva timp pana va termina!")
     for i in range(noEpoch):
         sol=epoca(noAnts, n, m, trace, alpha, beta, q0, rho).copy()

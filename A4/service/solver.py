@@ -2,6 +2,7 @@ import inspect
 import sys
 from typing import Optional, List, Tuple, Union
 
+from domain import constants
 from domain.constants import MIN_NUMBER_OF_SENSORS
 from domain.drone import Drone
 from domain.environment import Environment
@@ -157,7 +158,24 @@ class Solver:
 
         self.__environment: Environment = Environment(map_, drone)
 
-    def run(self):
+    @staticmethod
+    def get_best_solution(first: Optional[List[Position]], second: Optional[List[Position]]) -> Optional[List[Position]]:
+        if first is None:
+            return second
+        if second is None:
+            return first
+
+        first_length: int = len(first)
+        second_length: int = len(second)
+
+        if first_length > second_length:
+            return first
+        elif first_length == second_length:
+            return
+        else:
+            return second
+
+    def run(self) -> Optional[List[Position]]:
         """
         runs the solver
         :return: atm, nothing
@@ -167,4 +185,14 @@ class Solver:
             raise ValueError("[error][{}.{}()] Failed to run solver: {}\n".format(__class__,
                                                                                   inspect.stack()[0].function,
                                                                                   "Environment is NOT set."))
-        pass  # TODO
+        best_solution: Optional[List[Position]] = None
+
+        for epoch in range(constants.EPOCHS):
+            current_solution = None
+            best_solution = None # self.get_best_solution(current_solution, best_solution)
+            pass  # TODO
+
+        return best_solution  # energy_levels
+
+
+

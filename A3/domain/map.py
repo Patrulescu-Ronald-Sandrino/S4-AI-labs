@@ -23,13 +23,6 @@ class Map:
         self.__columns = columns
         self.__surface = np.zeros((self.__rows, self.__columns))
 
-    @property
-    def width(self) -> int:  # getter property
-        return self.__columns
-
-    @property
-    def height(self) -> int:
-        return self.__rows
 
     def __getitem__(self, item: int) -> List[int]:
         """

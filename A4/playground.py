@@ -1,5 +1,30 @@
 from typing import Optional
 
+import numpy as np
+
+
+def numpy_ndarray_to_list():
+    a = np.zeros((3, 5))
+    print(type(a[0]))
+    for _ in a:
+        print(_)
+
+
+def static_methods():
+    class A:
+
+        def __init__(self, a):
+            pass
+
+        @staticmethod
+        def do_something():
+            print("A.do_something() called")
+
+    a = A(2)
+    a.do_something()
+    A.do_something()
+    # a = np.zeros((0, 0))
+
 
 def main():
     pass
@@ -9,6 +34,8 @@ def main():
     # lazy_evaluation()  # result: lazy evaluation is performed
     # range_values()
     # type_hints_redeclaration()
+    #numpy_ndarray_to_list()
+    static_methods()
 
 
 def string_parsing():

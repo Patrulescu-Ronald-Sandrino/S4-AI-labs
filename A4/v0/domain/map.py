@@ -178,6 +178,6 @@ class Map:
         string = ""
         for row in range(self.__rows):
             for column in range(self.__columns):
-                string = string + str(int(self.__surface[row][column]))
+                string = string + str(int(self.__surface[row][column])) + " "
             string = string + "\n"
         return string

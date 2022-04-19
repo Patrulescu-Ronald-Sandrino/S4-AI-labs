@@ -10,7 +10,7 @@ def main():
         .add_sensors_random(MAP_SENSORS)
     drone: Drone = Drone(DRONE_X, DRONE_Y, DRONE_BATTERY)
 
-    solution, duration = Solver(map_, drone).run(ANTS, EPOCHS)
+    solution, duration = Solver(map_, drone).run(NUMBER_OF_ANTS, NUMBER_OF_EPOCHS)
 
     print(f'Drone\'s position: {drone.row} {drone.column}')
     print(f'It took {duration} seconds')

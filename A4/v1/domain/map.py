@@ -5,12 +5,26 @@ import inspect
 import pickle
 from enum import IntEnum
 from random import random, randint
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 import numpy as np
 import texttable
 
+import tools.collections
 from tools.collections import flat_map
+
+
+class Direction(IntEnum):
+    UP = 0
+    RIGHT = 1
+    DOWN = 2
+    LEFT = 3
+
+
+DIRECTION_DELTA = {Direction.UP: (0, 1),
+                   Direction.RIGHT: (1, 0),
+                   Direction.DOWN: (0, -1),
+                   Direction.LEFT: (-1, 0)}
 
 
 class Map:
@@ -22,7 +36,9 @@ class Map:
     def __init__(self, rows: int, columns: int):
         self.__rows = rows
         self.__columns = columns
-        self.__surface: List[List[Map.CellType.EMPTY]] = [[Map.CellType.EMPTY for _ in range(columns)] for _ in range(rows)]
+        # self.__surface: List[List[Map.CellType.EMPTY]] = [[Map.CellType.EMPTY for _ in range(columns)] for _ in range(rows)]
+        self.__surface: List[List[Map.CellType.EMPTY]] = tools.collections.create_matrix(lambda x, y: Map.CellType.EMPTY
+                                                                                         , self.rows, self.columns)
 
     @property
     def rows(self) -> int:
@@ -77,6 +93,27 @@ class Map:
         for index, current_cell_type in enumerate(flat_map(self.surface, lambda x: x)):
             if current_cell_type == cell_type:
                 result.append((int(index / self.columns), index % self.columns))
+
+        return result
+
+    def __find_distances_to_walls(self, row: int, column: int) -> Dict[Direction, int]:
+        result: Dict[Direction, int] = {direction: 0 for direction in Direction}
+
+        for direction in Direction:
+            delta_column, delta_row = DIRECTION_DELTA[direction]
+            next_row, next_column = row + delta_row, column + delta_column
+
+            while self.is_position_valid(next_row, next_column) and self.__surface[next_row][next_column] != Map.CellType.WALL:
+                result[direction] += 1
+                next_row, next_column = next_row + delta_row, next_column + delta_column
+
+        return result
+
+    def compute_sensors_gains(self) -> Dict[Tuple[int, int], List[int]]:
+        result: Dict[Tuple[int, int], List[int]] = {}
+        sensors: List[Tuple[int, int]] = self.find_all(Map.CellType.SENSOR)
+
+        # TODO #1: this and remove __find_distances_to_walls
 
         return result
 

@@ -172,7 +172,7 @@ class Map:
         table.set_cols_width([5 for _ in range(0, self.__columns + 1)])
         table.add_rows([[""] + [str(_) for _ in range(0, self.__columns)]])
         table.add_rows([[str(row)] + [str(self.__surface[row][column]) for column in range(0, self.__columns)]
-                        for row in range(0, self.__rows)])
+                        for row in range(0, self.__rows)], False)
         return table.draw()
 
     def __str__(self) -> str:

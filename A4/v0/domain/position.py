@@ -44,14 +44,14 @@ class Position:
     def to(self, direction: Direction, steps: int = 1) -> 'Position':
         """
         Creates a new position, to the given direction.
-        If one of the parameters goes below 0, then POSITION_INVALID is returned.
+        If one of the new coordinates goes below 0, then Position.INVALID is returned.
         A negative 'steps' value inverses the direction. Ex: Position.to(RIGHT, 3) == Position.to(LEFT, -3)
         """
         delta_x, delta_y = DIRECTION_DELTA[direction]
         try:
             return Position(self.__x + delta_x * steps, self.__y + delta_y * steps)
         except ValueError:
-            return POSITION_INVALID
+            return Position.INVALID
 
     def __eq__(self, other: 'Position') -> bool:
         return self.__x == other.__x and self.__y == other.__y

@@ -11,8 +11,8 @@ DRONE_BATTERY: int = 50
 MAX_SENSOR_CAPACITY: int = 5
 
 
-ANTS: int = 10
-EPOCHS: int = 100
+NUMBER_OF_ANTS: int = 10
+NUMBER_OF_EPOCHS: int = 100
 
 ALPHA: float = 1.9
 BETA: float = 0.9

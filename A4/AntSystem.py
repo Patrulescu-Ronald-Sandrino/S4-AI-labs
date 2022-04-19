@@ -123,5 +123,7 @@ def main(n = 8,m = 8,noEpoch = 100,noAnts = 10,alpha = 1.9,beta = 0.9,rho = 0.05
             bestSol=sol.copy()
     print ("lungimea celei mai bune solutii depistate la aceasta rulare:", len(bestSol))
     print ("Drumul detectat este:", bestSol)
-    
-main()
+
+
+if __name__ == "__main__":
+    main()

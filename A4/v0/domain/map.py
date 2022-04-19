@@ -7,10 +7,11 @@ from typing import List
 import numpy as np
 import texttable
 
-from v0.domain.constants import MapPosition, MAP_FILL, MAP_ROWS, MAP_COLUMNS, MAP_FILEPATH, MAX_SENSOR_ENERGY, Direction, \
+from tools.math import out_of_range
+from v0.domain.constants import MapPosition, MAP_FILL, MAP_ROWS, MAP_COLUMNS, MAP_FILEPATH, MAX_SENSOR_ENERGY, \
+    Direction, \
     MIN_SENSOR_ENERGY
 from v0.domain.position import Position
-from tools import Math
 
 
 class Map:
@@ -86,7 +87,7 @@ class Map:
                                                                + index + " is skipped: invalid position."))
 
     def compute_sensor_gains(self, sensor_position: Position, last_energy_level: int = MAX_SENSOR_ENERGY) -> List[int]:
-        if Math.out_of_range(last_energy_level, MIN_SENSOR_ENERGY, MAX_SENSOR_ENERGY):
+        if out_of_range(last_energy_level, MIN_SENSOR_ENERGY, MAX_SENSOR_ENERGY):
             raise ValueError("[error][{}.{}()] {}\n".format(__class__, inspect.stack()[0].function, "Invalid value "
                                                                                                     "for last energy "
                                                                                                     "level: must be "

@@ -10,9 +10,11 @@ from typing import List, Tuple
 import numpy as np
 import texttable
 
+from tools.collections import flat_map
+
 
 class Map:
-    class Position(IntEnum):
+    class CellType(IntEnum):
         EMPTY = 0
         WALL = 1
         SENSOR = 2
@@ -20,7 +22,7 @@ class Map:
     def __init__(self, rows: int, columns: int):
         self.__rows = rows
         self.__columns = columns
-        self.__surface = np.zeros((self.__rows, self.__columns))
+        self.__surface: List[List[Map.CellType.EMPTY]] = [[Map.CellType.EMPTY for _ in range(columns)] for _ in range(rows)]
 
     @property
     def rows(self) -> int:
@@ -31,43 +33,52 @@ class Map:
         return self.__columns
 
     @property
-    def surface(self) -> List[List[Map.Position]]:
-        return [[self.__surface[row][column] for column in range(self.columns)] for row in range(self.rows)]
+    def surface(self) -> List[List[Map.CellType]]:
+        return copy.deepcopy(self.__surface)
 
     def is_position_valid(self, row: int, column: int) -> bool:
         return 0 <= row < self.rows and 0 <= column < self.columns
 
     def add_walls_random(self, fill: float) -> Map:
-        """replaces the old positions' values"""
+        """replaces the old cellTypes' values"""
         new_map: Map = Map(self.rows, self.columns)
 
         for i in range(new_map.rows):
             for j in range(new_map.columns):
                 if random() < fill:
-                    new_map.__surface[i][j] = Map.Position.WALL
+                    new_map.__surface[i][j] = Map.CellType.WALL
 
         return new_map
 
     def add_sensors_from_list(self, sensors_list: List[Tuple[int, int]]):
-        """adds sensors only on empty positions"""
+        """adds sensors only on empty cellTypes"""
         new_map: Map = copy.deepcopy(self)
 
         for sensor_row, sensor_column in sensors_list:
-            if self.surface[sensor_row][sensor_column] == Map.Position.EMPTY:
-                self.surface[sensor_row][sensor_column] = Map.Position.SENSOR
+            if self.surface[sensor_row][sensor_column] == Map.CellType.EMPTY:
+                self.surface[sensor_row][sensor_column] = Map.CellType.SENSOR
 
         return new_map
 
     def add_sensors_random(self, count: int) -> Map:
-        """adds sensors only on empty positions"""
+        """adds sensors only on empty cellTypes"""
         new_map: Map = copy.deepcopy(self)
 
         for _ in range(count):
-            row, column = randint(0, self.rows), randint(0, self.columns)
-            if self.surface[row][column] == Map.Position.EMPTY:
-                self.surface[row][column] = Map.Position.SENSOR
+            row, column = randint(0, self.rows - 1), randint(0, self.columns - 1)
+            if self.surface[row][column] == Map.CellType.EMPTY:
+                self.surface[row][column] = Map.CellType.SENSOR
 
         return new_map
+
+    def find_all(self, cell_type: CellType) -> List[Tuple[int, int]]:
+        result: List[Tuple[int, int]] = []
+
+        for index, current_cell_type in enumerate(flat_map(self.surface, lambda x: x)):
+            if current_cell_type == cell_type:
+                result.append((int(index / self.columns), index % self.columns))
+
+        return result
 
     @staticmethod
     def from_file(filename: str) -> Map:
@@ -97,6 +108,6 @@ class Map:
         table.set_cols_align(['c' for _ in range(0, self.__columns + 1)])
         table.set_cols_width([5 for _ in range(0, self.__columns + 1)])
         table.add_rows([[""] + [str(_) for _ in range(0, self.__columns)]])
-        table.add_rows([[str(row)] + [str(self.__surface[row][column]) for column in range(0, self.__columns)]
-                        for row in range(0, self.__rows)])
+        table.add_rows([[str(row)] + [str(int(self.__surface[row][column])) for column in range(0, self.__columns)]
+                        for row in range(0, self.__rows)], False)
         return table.draw()

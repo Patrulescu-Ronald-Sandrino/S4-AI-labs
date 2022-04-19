@@ -32,9 +32,9 @@ importance 1:
     
 importance 2:
     1. replace conditions in Position.__init__() with:
-        if Math.out_of_range(x, 0, MAX_INT - 1):
+        if tools.math.out_of_range(x, 0, MAX_INT - 1):
             ...
-        if Math.out_of_range(y, 0, MAX_INT - 1):
+        if tools.math.out_of_range(y, 0, MAX_INT - 1):
             ...
     2. 
 

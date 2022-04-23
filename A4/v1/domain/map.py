@@ -12,6 +12,7 @@ import texttable
 
 import tools.collections
 from tools.collections import flat_map
+from v1.domain.problem_constants import MAX_SENSOR_CAPACITY
 
 
 class Direction(IntEnum):
@@ -21,10 +22,10 @@ class Direction(IntEnum):
     LEFT = 3
 
 
-DIRECTION_DELTA = {Direction.UP: (0, 1),
-                   Direction.RIGHT: (1, 0),
-                   Direction.DOWN: (0, -1),
-                   Direction.LEFT: (-1, 0)}
+DIRECTION_DELTA = {Direction.UP: (0, 1),  # OUTDATED -> UP for (x, y); RIGHT for (row, column)
+                   Direction.RIGHT: (1, 0),  # OUTDATED -> RIGHT for(x, y); DOWN for (row, column)
+                   Direction.DOWN: (0, -1),  # OUTDATED -> DOWN for(x, y); LEFT for (row, column)
+                   Direction.LEFT: (-1, 0)}  # OUTDATED -> LEFT for(x, y); UP for (row, column)
 
 
 class Map:
@@ -161,3 +162,25 @@ class Map:
         table.add_rows([[str(row)] + [str(int(self.__surface[row][column])) for column in range(0, self.__columns)]
                         for row in range(0, self.__rows)], False)
         return table.draw()
+
+    def create_pheromone_matrix(self) -> List[List[Dict[Direction, List[float]]]]:
+        pheromone_matrix : List[List[Dict[Direction, List[float]]]] = []
+
+        for row in range(self.rows):
+            pheromone_matrix.append([])
+
+            for column in range(self.columns):
+                pheromone_matrix[-1].append({})
+
+                for direction in Direction:
+                    delta_column, delta_row = DIRECTION_DELTA[direction]
+                    neighbour = row + delta_row, column + delta_column
+
+                    if self.surface[row][column] == Map.CellType.WALL:
+                        pheromone_matrix[row][column][direction] = [0 for _ in range(MAX_SENSOR_CAPACITY + 1)]
+                    elif self.surface[row][column] == Map.CellType.SENSOR:
+                        pheromone_matrix[row][column][direction] = [MAX_SENSOR_CAPACITY for _ in range(MAX_SENSOR_CAPACITY + 1)]
+                    elif self.surface[row][column] == Map.CellType.EMPTY:
+                        pheromone_matrix[row][column][direction] = [1.0] + [0 for _ in range(MAX_SENSOR_CAPACITY)]
+
+        return pheromone_matrix

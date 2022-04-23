@@ -1,22 +1,22 @@
 import time
 from random import randint
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 
 import tools.collections
 from tools.general import function_name
 from v1.domain.ant import Ant
 from v1.domain.drone import Drone
-from v1.domain.map import Map
+from v1.domain.map import Map, Direction
 
 
 class Solver:
     def __init__(self, map_: Map, drone: Drone):
         self.__map: Map = map_
         self.__drone: Drone = drone
-        self.__trace: List[List[float]] = []
+        self.__pheromone_matrix: List[List[Dict[Direction, List[float]]]] = []
 
     def prepare(self):
-        self.__trace: List[List[float]] = tools.collections.create_matrix(lambda i, j: 1.0, self.__map.rows * self.__map.columns)
+        self.__pheromone_matrix = self.__map.create_pheromone_matrix()
 
         # make sure the drone is on a free cell
         if self.__map.surface[self.__drone.row][self.__drone.column] != Map.CellType.EMPTY:
@@ -28,7 +28,7 @@ class Solver:
             self.__drone.row, self.__drone.column = empty_positions[randint(0, number_of_empty_positions - 1)]
 
     def epoch(self, number_of_ants: int) -> Optional[List[int]]:  # TODO
-        ants = [Ant() for _ in range(number_of_ants)]
+        ants_population = [Ant(self.__drone, self.__map) for _ in range(number_of_ants)]
 
         print(self.__drone.row, self.__drone.column)  # TODO [END] remove this
         return None

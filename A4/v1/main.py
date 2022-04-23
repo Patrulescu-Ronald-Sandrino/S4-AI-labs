@@ -31,7 +31,8 @@ if __name__ == "__main__":
 
 """
 TODO:
-    1. copy compute sensors_gain
+    1. update self.__fitness value in Ant.move()
+    2. implement Solver.epoch()
 
 
 """

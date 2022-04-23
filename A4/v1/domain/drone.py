@@ -1,3 +1,4 @@
+from typing import Tuple
 
 
 class Drone:
@@ -5,3 +6,7 @@ class Drone:
         self.row = row
         self.column = column
         self.energy = energy
+
+    @property
+    def position(self) -> Tuple[int, int]:
+        return self.row, self.column

@@ -8,6 +8,12 @@ def main():
     map_: Map = Map(MAP_ROWS, MAP_COLUMNS)\
         .add_walls_random(MAP_ADD_WALLS_FILL)\
         .add_sensors_random(MAP_SENSORS)
+    # print(map_.to_texttable())
+    # print(map_.find_all(Map.CellType.SENSOR))
+    # print(map_.compute_sensors_gains())
+    # for key, value in map_.compute_sensors_gains(5).items():
+    #     print(key, value)
+    # return
     drone: Drone = Drone(DRONE_X, DRONE_Y, DRONE_BATTERY)
 
     solution, duration = Solver(map_, drone).run(NUMBER_OF_ANTS, NUMBER_OF_EPOCHS)

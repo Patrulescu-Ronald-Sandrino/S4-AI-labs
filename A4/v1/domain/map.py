@@ -71,8 +71,8 @@ class Map:
         new_map: Map = copy.deepcopy(self)
 
         for sensor_row, sensor_column in sensors_list:
-            if self.surface[sensor_row][sensor_column] == Map.CellType.EMPTY:
-                self.surface[sensor_row][sensor_column] = Map.CellType.SENSOR
+            if new_map.__surface[sensor_row][sensor_column] == Map.CellType.EMPTY:
+                new_map.__surface[sensor_row][sensor_column] = Map.CellType.SENSOR
 
         return new_map
 
@@ -81,9 +81,9 @@ class Map:
         new_map: Map = copy.deepcopy(self)
 
         for _ in range(count):
-            row, column = randint(0, self.rows - 1), randint(0, self.columns - 1)
-            if self.surface[row][column] == Map.CellType.EMPTY:
-                self.surface[row][column] = Map.CellType.SENSOR
+            row, column = randint(0, new_map.rows - 1), randint(0, new_map.columns - 1)
+            if new_map.__surface[row][column] == Map.CellType.EMPTY:
+                new_map.__surface[row][column] = Map.CellType.SENSOR
 
         return new_map
 
@@ -96,26 +96,39 @@ class Map:
 
         return result
 
-    def __find_distances_to_walls(self, row: int, column: int) -> Dict[Direction, int]:
-        result: Dict[Direction, int] = {direction: 0 for direction in Direction}
+    def compute_sensor_gains(self, row: int, column: int, last_level: int = -1) -> List[int]:
+        """"""
+        gains: List[int] = [0]
+        if last_level == 0:
+            return gains
 
+        # compute for each range, the number of squares seen
         for direction in Direction:
             delta_column, delta_row = DIRECTION_DELTA[direction]
-            next_row, next_column = row + delta_row, column + delta_column
 
-            while self.is_position_valid(next_row, next_column) and self.__surface[next_row][next_column] != Map.CellType.WALL:
-                result[direction] += 1
-                next_row, next_column = next_row + delta_row, next_column + delta_column
+            step: int = 1
+            current_row, current_column = row + delta_row, column + delta_column
+            while self.is_position_valid(current_row, current_column) and \
+                    self.__surface[current_row][current_column] != Map.CellType.WALL:
+                if len(gains) == step:
+                    gains.append(1)
+                else:
+                    gains[step] += 1  # assumes that step <= len(gains) - 1
 
-        return result
+                if 0 < last_level == step:
+                    break
 
-    def compute_sensors_gains(self) -> Dict[Tuple[int, int], List[int]]:
-        result: Dict[Tuple[int, int], List[int]] = {}
-        sensors: List[Tuple[int, int]] = self.find_all(Map.CellType.SENSOR)
+                step += 1
+                current_row, current_column = current_row + delta_row, current_column + delta_column
 
-        # TODO #1: this and remove __find_distances_to_walls
+        # add the # of squares seen at the previous range to the # of squares seen at the current range
+        for energy in range(2, len(gains)):
+            gains[energy] += gains[energy - 1]
 
-        return result
+        return gains
+
+    def compute_sensors_gains(self, last_level: int = -1) -> Dict[Tuple[int, int], List[int]]:
+        return {position: self.compute_sensor_gains(*position, last_level) for position in self.find_all(Map.CellType.SENSOR)}
 
     @staticmethod
     def from_file(filename: str) -> Map:

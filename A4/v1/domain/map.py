@@ -53,6 +53,20 @@ class Map:
     def surface(self) -> List[List[Map.CellType]]:
         return copy.deepcopy(self.__surface)
 
+    def at(self, position: Tuple[int, int]) -> Map.CellType:
+        """
+        Returns the value of a cell at a given position
+        :param position:
+        :return:
+        :throws IndexError: if the position is outisde the map
+        """
+        row, column = position
+
+        if not self.is_position_valid(row, column):
+            raise IndexError("Position is outside the map")
+
+        return self.surface[row][column]
+
     def is_position_valid(self, row: int, column: int) -> bool:
         return 0 <= row < self.rows and 0 <= column < self.columns
 
@@ -164,7 +178,7 @@ class Map:
         return table.draw()
 
     def create_pheromone_matrix(self) -> List[List[Dict[Direction, List[float]]]]:
-        pheromone_matrix : List[List[Dict[Direction, List[float]]]] = []
+        pheromone_matrix: List[List[Dict[Direction, List[float]]]] = []
 
         for row in range(self.rows):
             pheromone_matrix.append([])
@@ -184,3 +198,10 @@ class Map:
                         pheromone_matrix[row][column][direction] = [1.0] + [0 for _ in range(MAX_SENSOR_CAPACITY)]
 
         return pheromone_matrix
+
+    @staticmethod
+    def shift_position(position: Tuple[int, int], direction: Direction, steps: int = 1) -> Tuple[int, int]:
+        delta_column, delta_row = DIRECTION_DELTA[direction]
+        row, column = position
+        return row + delta_row * steps, column + delta_column * steps
+

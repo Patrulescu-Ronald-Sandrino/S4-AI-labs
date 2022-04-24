@@ -26,6 +26,13 @@ def static_methods():
     # a = np.zeros((0, 0))
 
 
+def dict_to_list():
+    dict_ = {(2, 3): 5, (4, 5): 8}
+    print(list(dict_.items()))
+    print(list(dict_.items())[0])
+    (a, b), c = list(dict_.items())[0]
+
+
 def main():
     pass
     # string_parsing()
@@ -35,7 +42,8 @@ def main():
     # range_values()
     # type_hints_redeclaration()
     #numpy_ndarray_to_list()
-    static_methods()
+    # static_methods()
+    dict_to_list()
 
 
 def string_parsing():

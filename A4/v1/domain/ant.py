@@ -16,6 +16,10 @@ class Ant:
         self.__spent_energy = tools.collections.create_matrix(lambda row, column: 0, self.__map.rows, self.__map.columns)
 
     @property
+    def path(self) -> Dict[Tuple[int, int], int]:
+        return self.__path
+
+    @property
     def fitness(self) -> int:
         return self.__fitness
 
@@ -76,11 +80,11 @@ class Ant:
 
         return result
 
-    def move(self, trace: List[List[Dict[Direction, List[float]]]]):
+    def move(self, trace: List[List[Dict[Direction, List[float]]]]) -> bool:
         potential_neighbours: Dict[Direction, Dict[Tuple[int, int], int]] = self.__get_potential_neighbours(trace)
 
         if len(potential_neighbours) == 0:
-            return
+            return False
 
         transition_probabilities: Dict[Direction, Dict[Tuple[int, int], float]] = Ant.compute_transitions_probabilities(
             potential_neighbours, trace)
@@ -100,6 +104,27 @@ class Ant:
         self.__path[(row, column)] = energy
         self.__battery -= energy + 1
         self.__spent_energy[row][column] = energy
+        self.__update_fitness()
+
+        return True
+
+    def __update_fitness(self) -> None:
+        marked_sensors_map: List[List[int]] = tools.collections.create_matrix(lambda row, column: 0, self.__map.rows, self.__map.columns)
+
+        for position, energy in self.__path.items():
+            if self.__map.at(position) != Map.CellType.SENSOR:
+                continue
+
+            for direction in Direction:
+                for energy_level in range(energy):
+                    current_row, current_column = Map.shift_position(position, direction, energy_level)
+
+                    if self.__map.surface[current_row][current_column] == Map.CellType.WALL:
+                        break
+
+                    marked_sensors_map[current_row][current_column] = 1
+
+        self.__fitness = sum([sum(row) for row in marked_sensors_map])
 
     @staticmethod
     def roulette(transition_probabilities: List[Tuple[Direction, Tuple[int, int], float]]) -> Tuple[Direction, Tuple[int, int]]:

@@ -12,8 +12,10 @@ MAX_SENSOR_CAPACITY: int = 5
 
 
 NUMBER_OF_ANTS: int = 10
-ITERATIONS: int = 50
-NUMBER_OF_EPOCHS: int = 100
+# ITERATIONS: int = 50
+ITERATIONS: int = 9
+# NUMBER_OF_EPOCHS: int = 100
+NUMBER_OF_EPOCHS: int = 10
 
 ALPHA: float = 1.9
 BETA: float = 0.9

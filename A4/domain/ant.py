@@ -2,9 +2,9 @@ from random import random, randint
 from typing import List, Dict, Tuple, Optional
 
 import tools.collections
-from v1.domain.drone import Drone
-from v1.domain.map import Direction, DIRECTION_DELTA, Map
-from v1.domain.problem_constants import MAX_SENSOR_CAPACITY, ALPHA, BETA, Q0
+from domain.drone import Drone
+from domain.map import Direction, DIRECTION_DELTA, Map
+from domain.problem_constants import MAX_SENSOR_CAPACITY, ALPHA, BETA, Q0
 
 
 class Ant:
@@ -24,15 +24,17 @@ class Ant:
         return self.__fitness
 
     def __get_potential_neighbours(self, trace: List[List[Dict[Direction, List[float]]]]) -> Dict[Direction, Dict[Tuple[int, int], int]]:
-        current_row, current_column = next(reversed(self.__path.values()))  # python get the last added value in a dictionary https://stackoverflow.com/a/63059166/17299754
+        current_row, current_column = next(reversed(self.__path.keys()))  # python get the last added value in a dictionary https://stackoverflow.com/a/63059166/17299754
         # potential_neighbours = {}  # type: Dict[Direction, Dict[Tuple[int, int], int]]
         potential_neighbours: Dict[Direction, Dict[Tuple[int, int], int]] = {}
 
         for direction in Direction:
             for energy_level in range(min(MAX_SENSOR_CAPACITY + 1, self.__battery)):  # TODO: maybe its self.__battery + 1 instead
-                if tau := trace[current_row][current_column][direction] != 0:
+                if trace[current_row][current_column][direction] != 0:
                     delta_column, delta_row = DIRECTION_DELTA[direction]
                     next_position = next_row, next_column = current_row + delta_row, current_column + delta_column
+                    if not self.__map.is_position_valid(next_row, next_column):  # TODO: TRY without this
+                        break
 
                     if self.__spent_energy[next_row][next_column] <= energy_level and next_position not in self.__path:
                         potential_neighbours[direction] = {next_position: energy_level}
@@ -58,10 +60,11 @@ class Ant:
     @staticmethod
     def find_position_with_highest_transition_probability(transition_probabilities: Dict[Direction, Dict[Tuple[int, int], float]]) -> Optional[Tuple[Direction, Tuple[int, int]]]:
         position_with_highest_transition_probability: Optional[Tuple[Direction, Tuple[int, int]]] = None
-        highest_transition_probability: int = -1
+        highest_transition_probability: float = -1
 
         for direction in transition_probabilities.keys():
-            (row, column), transition_probability = list(transition_probabilities.items())[0]
+            # (row, column), transition_probability = list(transition_probabilities.items())[0]
+            (row, column), transition_probability = next(iter(transition_probabilities[direction].items()))
 
             if transition_probability > highest_transition_probability:
                 position_with_highest_transition_probability = direction, (row, column)
@@ -74,7 +77,7 @@ class Ant:
         result: List[Tuple[Direction, Tuple[int, int], float]] = []
 
         for direction in transition_probabilities.keys():
-            (row, column), transition_probability = list(transition_probabilities.items())[0]
+            (row, column), transition_probability = next(iter(transition_probabilities[direction].items()))
 
             result.append((direction, (row, column), transition_probability))
 
@@ -119,7 +122,7 @@ class Ant:
                 for energy_level in range(energy):
                     current_row, current_column = Map.shift_position(position, direction, energy_level)
 
-                    if self.__map.surface[current_row][current_column] == Map.CellType.WALL:
+                    if not self.__map.is_position_valid(current_row, current_column) or self.__map.surface[current_row][current_column] == Map.CellType.WALL:
                         break
 
                     marked_sensors_map[current_row][current_column] = 1

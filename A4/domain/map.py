@@ -7,12 +7,11 @@ from enum import IntEnum
 from random import random, randint
 from typing import List, Tuple, Dict
 
-import numpy as np
 import texttable
 
-import tools.collections
+import tools
 from tools.collections import flat_map
-from v1.domain.problem_constants import MAX_SENSOR_CAPACITY
+from domain.problem_constants import MAX_SENSOR_CAPACITY
 
 
 class Direction(IntEnum):

@@ -17,9 +17,9 @@ class Solver:
         self.__pheromone_matrix: List[List[Dict[Direction, List[float]]]] = []
 
     def prepare(self):
-        print("before create_pheromone_matrix()")
+        # print("before create_pheromone_matrix()")
         self.__pheromone_matrix = self.__map.create_pheromone_matrix()
-        print("after create_pheromone_matrix()")
+        # print("after create_pheromone_matrix()")
 
         # make sure the drone is on a free cell
         if self.__map.surface[self.__drone.row][self.__drone.column] != Map.CellType.EMPTY:
@@ -50,13 +50,13 @@ class Solver:
             if ant.move(self.__pheromone_matrix):
                 moved_ants.append(ant)
 
-        return moved_ants
-        # return ants_population
+        # return moved_ants
+        return ants_population
 
     def epoch(self, number_of_ants: int) -> Optional[Ant]:
         moved_ants: List[Ant] = [Ant(self.__drone, self.__map) for _ in range(number_of_ants)]
 
-        print(f"[epoch()] START # of ants: {number_of_ants}")
+        # print(f"[epoch()] START # of ants: {number_of_ants}")
         for _ in range(ITERATIONS):
             moved_ants = self.__move_ants(moved_ants)
             # print(f"[debug] moved ants, left: {len(moved_ants)}")  # TODO [END] remove this
@@ -64,7 +64,7 @@ class Solver:
             # for index, ant in enumerate(moved_ants):
             #     print(f'ant {index}: {ant.path}')
 
-        print(f"[debug] len(moved_ants) after {ITERATIONS} iterations: {len(moved_ants)}")
+        # print(f"[debug] len(moved_ants) after {ITERATIONS} iterations: {len(moved_ants)}")
         if len(moved_ants) == 0:
             return None
 
@@ -90,14 +90,14 @@ class Solver:
     def run(self, number_of_ants: int, number_of_epochs: int) -> Tuple[Optional[Ant], float]:
         overall_best_ant: Optional[Ant] = None
 
-        print("before prepare()")
+        # print("before prepare()")
         self.prepare()
-        print("after prepare()")
+        # print("after prepare()")
 
         start_time: float = time.time()
         print(f'Drone: {self.__drone.position}')  # TODO [END] remove this
         for epoch in range(number_of_epochs):
-            print(f"EPOCH {epoch}")  # TODO [END] remove this
+            # print(f"EPOCH {epoch}")  # TODO [END] remove this
 
             best_ant_of_epoch: Ant = self.epoch(number_of_ants)
 
@@ -105,8 +105,9 @@ class Solver:
             if overall_best_ant == best_ant_of_epoch:
                 if overall_best_ant is None:
                     print("[Solver.run()] overall_best_ant is None")
+                    print(f'[epoch {epoch}/{number_of_epochs}]')
                 else:
-                    print(f"[Solver.run()] overall_best_ant == best_ant_of_epoch; fitness: {overall_best_ant.fitness} path: {overall_best_ant.path}")
+                    print(f'[epoch {epoch}/{number_of_epochs}][Best solution] fitness: {overall_best_ant.fitness} path: {overall_best_ant.path}')
 
         end_time: float = time.time()
 

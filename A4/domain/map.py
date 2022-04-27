@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import functools
 import inspect
 import pickle
 from enum import IntEnum
@@ -33,7 +34,7 @@ class Map:
         WALL = 1
         SENSOR = 2
 
-    def __init__(self, rows: int, columns: int):
+    def __init__(self, rows: int = 0, columns: int = 0):
         self.__rows = rows
         self.__columns = columns
         # self.__surface: List[List[Map.CellType.EMPTY]] = [[Map.CellType.EMPTY for _ in range(columns)] for _ in range(rows)]
@@ -145,27 +146,44 @@ class Map:
         return {position: self.compute_sensor_gains(*position, last_level) for position in self.find_all(Map.CellType.SENSOR)}
 
     @staticmethod
-    def from_file(filename: str) -> Map:
+    def from_file_pickle(filename: str) -> Map:
         try:
             with open(filename, "rb") as input_file:
                 return pickle.load(input_file)
         except OSError as e:
             raise IOError("[error][{}.{}()] Failed to load map: {}\n".format(__class__, inspect.stack()[0].function, e))
 
-    def save(self, filename: str) -> None:
+    def to_file_pickle(self, filename: str) -> None:
         try:
             with open(filename, "wb") as output_file:
                 pickle.dump(self, output_file)
         except OSError as e:
             raise IOError("[error][{}.{}()] Failed to save map: {}\n".format(__class__, inspect.stack()[0].function, e))
 
+    def to_file_text(self, filename: str) -> None:
+        try:
+            with open(filename, "w") as output_file:
+                output_file.write(f'{self.rows} {self.columns}\n')
+                output_file.write(self.__str__())
+        except OSError as e:
+            raise IOError("[error][{}.{}()] Failed to save map: {}\n".format(__class__, inspect.stack()[0].function, e))
+
+    def from_file_text(self, filename: str) -> None:
+        try:
+            with open(filename, "r") as input_file:
+                self.__rows, self.__columns = map(lambda x: int(x), input_file.readline().split(' '))
+                self.__surface = [list(map(lambda x: int(x), line.strip().split(' '))) for line in input_file.readlines()]
+        except Exception as e:
+            raise IOError("[error][{}.{}()] Failed to load map: {}\n".format(__class__, inspect.stack()[0].function, e))
+
     def __str__(self) -> str:
-        string = ""
-        for row in range(self.rows):
-            for column in range(self.columns):
-                string = string + str(int(self.surface[row][column])) + " "
-            string = string + "\n"
-        return string
+        # string = ""
+        # for row in range(self.rows):
+        #     for column in range(self.columns):
+        #         string = string + str(int(self.surface[row][column])) + " "
+        #     string = string + "\n"
+        # return string
+        return "".join([functools.reduce(lambda x, y: f'{x} {y}', map(lambda x: str(int(x)), row)) + '\n' for row in self.surface])
 
     def to_texttable(self) -> str:
         table: texttable.Texttable = texttable.Texttable()

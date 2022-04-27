@@ -1,3 +1,6 @@
+import functools
+import os.path
+
 from domain.drone import Drone
 from domain.map import Map
 from domain.problem_constants import *
@@ -6,9 +9,15 @@ from service.solver import Solver
 
 
 def main():
-    map_: Map = Map(MAP_ROWS, MAP_COLUMNS)\
-        .add_walls_random(MAP_ADD_WALLS_FILL)\
-        .add_sensors_random(MAP_SENSORS)
+    # map_: Map = Map(MAP_ROWS, MAP_COLUMNS)\
+    #     .add_walls_random(MAP_ADD_WALLS_FILL)\
+    #     .add_sensors_random(MAP_SENSORS)
+
+    map_: Map = Map()
+    map_.from_file_text(os.path.join('data', 'map.txt'))
+    # print(f'{map_.rows} {map_.columns}')
+    # print(map_.__str__())
+
     # print(map_.to_texttable())
     # print(map_.find_all(Map.CellType.SENSOR))
     # print(map_.compute_sensors_gains())
@@ -17,6 +26,7 @@ def main():
     # return
     drone: Drone = Drone(DRONE_X, DRONE_Y, DRONE_BATTERY)
     print(map_.to_texttable())
+
     print(f"Sensors: {map_.find_all(Map.CellType.SENSOR)}")
 
     solution, duration = Solver(map_, drone).run(NUMBER_OF_ANTS, NUMBER_OF_EPOCHS)
@@ -27,8 +37,7 @@ def main():
         print(f"Solution size: {len(solution.path)}")
         print(f"Solution: {solution.path}")
 
-        print('Starting GUI! Press R to restart drawing it.')
-        GUI(map_, solution.path).run()
+        # GUI(map_, solution.path).run()
     else:
         print(f"Solution:", solution)
 

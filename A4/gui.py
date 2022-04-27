@@ -61,6 +61,7 @@ class GUI:
         return map_image
 
     def run(self, speed: float = 0.5):
+        print('Starting GUI! Press R to restart drawing it.')
         pygame.font.init()
         FONT = pygame.font.SysFont('comicsansms', 15, True)
         pygame.font.quit()

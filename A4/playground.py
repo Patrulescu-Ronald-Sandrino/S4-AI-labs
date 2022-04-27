@@ -1,3 +1,4 @@
+from enum import IntEnum
 from typing import Optional
 
 import numpy as np
@@ -33,6 +34,15 @@ def dict_to_list():
     (a, b), c = list(dict_.items())[0]
 
 
+def int_enums():
+    class A(IntEnum):
+        a = 1
+        b = 2
+        c = 3
+
+    print(str(A.b))
+
+
 def main():
     pass
     # string_parsing()
@@ -43,7 +53,8 @@ def main():
     # type_hints_redeclaration()
     #numpy_ndarray_to_list()
     # static_methods()
-    dict_to_list()
+    # dict_to_list()
+    int_enums()
 
 
 def string_parsing():

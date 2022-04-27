@@ -33,11 +33,12 @@ class Ant:
                 if trace[current_row][current_column][direction] != 0:
                     delta_column, delta_row = DIRECTION_DELTA[direction]
                     next_position = next_row, next_column = current_row + delta_row, current_column + delta_column
-                    if not self.__map.is_position_valid(next_row, next_column):  # TODO: TRY without this
-                        break
-
-                    if self.__spent_energy[next_row][next_column] <= energy_level and next_position not in self.__path:
-                        potential_neighbours[direction] = {next_position: energy_level}
+                    if self.__map.is_position_valid(next_row, next_column):  # TODO: TRY without this
+                        if self.__spent_energy[next_row][next_column] <= energy_level and next_position not in self.__path:
+                            potential_neighbours[direction] = {next_position: energy_level}
+                    else:
+                        pass
+                        # break
 
         return potential_neighbours
 

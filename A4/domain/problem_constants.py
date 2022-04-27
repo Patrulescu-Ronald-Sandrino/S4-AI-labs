@@ -3,21 +3,21 @@
 MAP_ROWS: int = 20
 MAP_COLUMNS: int = 20
 MAP_ADD_WALLS_FILL: float = 0.2
-MAP_SENSORS: int = 6
+MAP_SENSORS: int = 7
 
-DRONE_X: int = 5
-DRONE_Y: int = 5
-DRONE_BATTERY: int = 50
+DRONE_X: int = 7
+DRONE_Y: int = 12
+DRONE_BATTERY: int = 100
 MAX_SENSOR_CAPACITY: int = 5
 
 
-NUMBER_OF_ANTS: int = 10
+NUMBER_OF_ANTS: int = 80
 # ITERATIONS: int = 50
-ITERATIONS: int = 9
+ITERATIONS: int = DRONE_BATTERY
 # NUMBER_OF_EPOCHS: int = 100
-NUMBER_OF_EPOCHS: int = 10
+NUMBER_OF_EPOCHS: int = 25
 
-ALPHA: float = 1.9
-BETA: float = 0.9
+ALPHA: float = 0.8
+BETA: float = 1.5
 Q0: float = 0.05
 RHO: float = 0.5

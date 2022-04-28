@@ -1,3 +1,4 @@
+import sys
 from enum import IntEnum
 from typing import Tuple
 
@@ -6,7 +7,17 @@ def main():
     pass
     # int_enums()
     # tuple_args()
-    ranges()
+    # ranges()
+    max_values()
+
+
+def max_values():
+    print(float('inf'))
+    print(int(float('inf')))
+    print(float('inf') == float('inf'))
+    print(sys.maxsize)
+    print(float('inf') - sys.maxsize)
+    print(type(float('inf')))
 
 
 def ranges():

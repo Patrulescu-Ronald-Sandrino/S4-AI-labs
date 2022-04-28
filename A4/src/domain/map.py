@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import copy
 import inspect
+import sys
 from enum import IntEnum
-from typing import Dict, List, Optional, Callable, Tuple
+from queue import Queue
+from typing import Dict, List, Optional, Callable, Tuple, Set
 
 import texttable as texttable
 
-from src.domain.drone import Drone
+import tools.collections
 from tools.collections import create_dictionary_matrix
 
 
@@ -133,7 +135,36 @@ class Map:
 
         return row + delta_row * steps, column + delta_column * steps
 
+    def compute_minimum_distance(self, source: Tuple[int, int], destination: Tuple[int, int]) -> float:
+        # V = rows * columns
+        # E = rows * (columns - 1) + (rows - 1) * columns = V^2 - rows - columns
+        queue: Queue = Queue()
+        visited: Set[Tuple[int, int]] = set()
+        distances: Dict[Tuple[int, int], float] = {(row, column): float('inf') for row in range(self.rows) for column in range(self.columns)}
 
+        visited.add(source)
+        distances[source] = 0
+        queue.put(source)
+
+        while queue.not_empty:
+            current: Tuple[int, int] = queue.get()
+
+            for neighbour in (Map.shift(current, direction) for direction in Direction):
+                if not self.is_in_map(*neighbour) or neighbour in visited:
+                    continue
+
+                visited.add(neighbour)
+                distances[neighbour] = distances[current] + 1
+                queue.put(neighbour)
+
+                if neighbour == destination:
+                    return distances[neighbour]
+
+        return float('inf')
+
+    def compute_minimum_distances_between_sensors(self) -> Dict[Tuple[int, int], Dict[Tuple[int, int], float]]:
+        sensors: List[Tuple[int, int]] = self.find_cells(Map.Cell.SENSOR)
+        return {sensor1: {sensor2: self.compute_minimum_distance(sensor1, sensor2) for sensor2 in sensors} for sensor1 in sensors}
 
 
 class MapWriter:

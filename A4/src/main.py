@@ -1,7 +1,9 @@
 import os.path
+import sys
 from random import random, randint
 from typing import Set
 
+from src.domain.drone import Drone
 from src.domain.map import *
 from src.domain.problem_constants import *
 from src.service.solver import Solver, SolverTools
@@ -41,6 +43,7 @@ def print_info(map_instance: Map, drone: Drone) -> None:
     sensors = map_instance.find_cells(Map.Cell.SENSOR)  # is slow
     print(f'SENSORS {len(sensors)}: {sensors}')
     print(f"Drone at: {drone.row}, {drone.column}")
+    print(map_instance.compute_minimum_distances_between_sensors())
 
 
 def main():

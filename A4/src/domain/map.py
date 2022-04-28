@@ -97,7 +97,6 @@ class Map:
         return 0 <= row < self.rows and 0 <= column < self.columns
 
     def find_cells(self, cell: Map.Cell) -> List[Tuple[int, int]]:
-        # return [(row, column) for row in self.surface.keys() for column in self.surface[row] if self.surface[row][column] == cell]
         return [(row, column) for row in range(self.rows) for column in range(self.columns) if self.surface[row][column] == cell]
 
     def is_wall(self, row: int, column: int) -> bool:
@@ -151,8 +150,8 @@ class Map:
         distances[source] = 0
         queue.put(source)
 
-        # if source == destination:
-        #     return 0
+        if source == destination:
+            return 0
 
         while queue.not_empty:
             current: Tuple[int, int] = queue.get()
@@ -172,7 +171,25 @@ class Map:
 
     def compute_minimum_distances_between_sensors(self) -> Dict[Tuple[int, int], Dict[Tuple[int, int], float]]:
         sensors: List[Tuple[int, int]] = self.find_cells(Map.Cell.SENSOR)
-        return {sensor1: {sensor2: self.compute_minimum_distance(sensor1, sensor2) for sensor2 in sensors if sensor1 != sensor2} for sensor1 in sensors}
+        distances: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = {}
+
+        for i in range(len(sensors)):
+            sensor1: Tuple[int, int] = sensors[i]
+
+            if sensor1 not in distances:
+                distances[sensor1] = {}
+            for j in range(i, len(sensors)):
+                sensor2: Tuple[int, int] = sensors[j]
+
+                distances[sensor1][sensor2] = self.compute_minimum_distance(sensor1, sensor2)
+                if sensor2 in distances:
+                    distances[sensor2][sensor1] = distances[sensor1][sensor2]
+                else:
+                    distances[sensor2] = {sensor1: distances[sensor1][sensor2]}
+
+        return distances
+        # less efficient:
+        # return {sensor1: {sensor2: self.compute_minimum_distance(sensor1, sensor2) for sensor2 in sensors if sensor1 != sensor2} for sensor1 in sensors}
 
 
 class MapWriter:

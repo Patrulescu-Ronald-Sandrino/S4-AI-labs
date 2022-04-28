@@ -1,5 +1,6 @@
 from typing import Callable, TypeVar, Dict
 
+
 T = TypeVar('T')
 
 

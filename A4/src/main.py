@@ -1,9 +1,12 @@
 import os.path
+import time
 from random import random, randint
 from typing import Set
 
+from src.domain.drone import Drone
 from src.domain.map import *
 from src.domain.problem_constants import *
+from src.service.solver import Solver, SolverTools
 
 
 def get_map_creation_predicate() -> Callable[[int, int], Map.Cell]:
@@ -25,13 +28,33 @@ def main():
     # map_instance: Map = MapBuilder().from_predicate(get_map_creation_predicate(),  MAP_ROWS, MAP_COLUMNS).get()
     # MapWriter.to_text_file(map_instance, os.path.join('data', 'map.txt'))
     print(map_instance)
+    for key, value in map_instance.compute_sensors_gains().items():
+        print(f'{key}: {value}')
     print(map_instance.to_texttable())
     print(f'ROWS: {map_instance.rows} COLUMNS: {map_instance.columns} TOTAL: {map_instance.rows * map_instance.columns}')
-    # walls = map_instance.find_cells(Map.Cell.WALL)  # is slow
-    # print(f'WALLS {len(walls)}: {walls}')
-    # sensors = map_instance.find_cells(Map.Cell.SENSOR)  # is slow
-    # print(f'SENSORS {len(sensors)}: {sensors}')
-    # print(f'SENSORS: {map_instance.find_cells(Map.Cell.SENSOR)}')
+
+    walls = map_instance.find_cells(Map.Cell.WALL)  # is slow
+    print(f'WALLS {len(walls)}: {walls}')
+    sensors = map_instance.find_cells(Map.Cell.SENSOR)  # is slow
+    print(f'SENSORS {len(sensors)}: {sensors}')
+
+    # print(map_instance.compute_sensors_gains())
+
+    drone: Drone = Drone(*DRONE_POSITION, DRONE_ENERGY)
+    try:
+        if map_instance.surface[drone.row][drone.column] != Map.Cell.EMPTY:
+            SolverTools.place_drone_on_empty_cell(map_instance, drone)
+    except Exception as e:
+        print(f'{e}')
+        return
+    print(f"Drone at: {drone.row}, {drone.column}")
+
+    best_ant, duration = Solver(map_instance, drone).run(NUMBER_OF_EPOCHS, NUMBER_OF_ANTS, NUMBER_OF_ITERATIONS)
+    print(f'It took {duration} second/s')
+    if best_ant is None:
+        print(f'best ant -> None')
+    else:
+        print(f'best ant -> fitness: {best_ant.fitness} path: {best_ant.path}')
 
 
 if __name__ == '__main__':

@@ -7,7 +7,23 @@ from typing import Dict, List, Optional, Callable, Tuple
 
 import texttable as texttable
 
+from src.domain.drone import Drone
 from tools.collections import create_dictionary_matrix
+
+
+class Direction(IntEnum):
+    UP = 0
+    RIGHT = 1
+    DOWN = 2
+    LEFT = 3
+
+
+DIRECTIONS: Dict[Direction, Tuple[int, int]] = {
+    Direction.UP: (-1, 0),
+    Direction.RIGHT: (0, 1),
+    Direction.DOWN: (1, 0),
+    Direction.LEFT: (0, -1),
+}
 
 
 class Map:
@@ -77,7 +93,47 @@ class Map:
         return 0 <= row < self.rows and 0 <= column < self.columns
 
     def find_cells(self, cell: Map.Cell) -> List[Tuple[int, int]]:
-        return [(row, column) for row in self.surface.keys() for column in self.surface[row] if self.surface[row][column] == cell]
+        # return [(row, column) for row in self.surface.keys() for column in self.surface[row] if self.surface[row][column] == cell]
+        return [(row, column) for row in range(self.rows) for column in range(self.columns) if self.surface[row][column] == cell]
+
+    def is_not_wall(self, row: int, column: int) -> bool:
+        return self.surface[row][column] != Map.Cell.WALL
+
+    def compute_sensor_gains(self, row: int, column: int, last_energy_level: int = -1) -> Dict[int, int]:
+        gains: Dict[int, int] = {0: 0}
+        if last_energy_level == 0:
+            return gains
+
+        for direction in Direction:
+            energy: int = 1
+            current_row, current_column = Map.shift((row, column), direction)
+
+            # compute individual gain for each energy
+            while self.is_in_map(current_row, current_column) and self.is_not_wall(current_row, current_column):
+                gains[energy] = gains[energy] + 1 if gains.__contains__(energy) else 1
+                if energy == last_energy_level > 0:
+                    break
+
+                energy += 1
+                current_row, current_column = Map.shift((current_row, current_column), direction)
+                
+        # add to each energy level the gain from the previous one
+        for energy in range(2, len(gains)):
+            gains[energy] += gains[energy - 1]
+
+        return gains
+
+    def compute_sensors_gains(self, last_energy_level: int = -1) -> Dict[Tuple[int, int], Dict[int, int]]:
+        return {position: self.compute_sensor_gains(*position, last_energy_level) for position in self.find_cells(Map.Cell.SENSOR)}
+
+    @staticmethod
+    def shift(position: Tuple[int, int], direction: Direction, steps: int = 1) -> Tuple[int, int]:
+        row, column = position
+        delta_row, delta_column = DIRECTIONS[direction]
+
+        return row + delta_row * steps, column + delta_column * steps
+
+
 
 
 class MapWriter:

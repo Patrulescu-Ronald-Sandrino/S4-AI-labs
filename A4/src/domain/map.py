@@ -3,7 +3,11 @@ from __future__ import annotations
 import copy
 import inspect
 from enum import IntEnum
-from typing import Dict, List
+from typing import Dict, List, Optional, Callable, Tuple
+
+import texttable as texttable
+
+from tools.collections import create_dictionary_matrix
 
 
 class Map:
@@ -22,6 +26,14 @@ class Map:
             self.__surface: Dict[int, Dict[int, Map.Cell]] = surface
         else:
             raise NotImplementedError("Please use MapFactory to instantiate!")
+
+    @staticmethod
+    def __create(surface: Dict[int, Dict[int, Map.Cell]]) -> Map:
+        Map._Map__can_create = True
+        map_instance: Map = Map(surface)
+        Map._Map__can_create = False
+
+        return map_instance
 
     @property
     def rows(self) -> int:
@@ -50,6 +62,23 @@ class Map:
         return matrix_str
         # return "".join([functools.reduce(lambda x, y: f'{x} {y}', map(lambda cell: str(cell), row.values())) + '\n' for row in self.surface.values()])
 
+    def to_texttable(self, column_width: int = 3) -> str:
+        table: texttable.Texttable = texttable.Texttable()
+
+        table.set_cols_align(['c' for _ in range(self.columns + 1)])
+        table.set_cols_width([column_width for _ in range(self.columns + 1)])
+        table.add_row([""] + [str(column_index) for column_index in range(self.columns)])
+        for row_index, row in self.surface.items():
+            table.add_row([row_index] + [int(cell) for cell in row.values()])
+
+        return table.draw()
+
+    def is_in_map(self, row: int, column: int) -> bool:
+        return 0 <= row < self.rows and 0 <= column < self.columns
+
+    def find_cells(self, cell: Map.Cell) -> List[Tuple[int, int]]:
+        return [(row, column) for row in self.surface.keys() for column in self.surface[row] if self.surface[row][column] == cell]
+
 
 class MapWriter:
     @staticmethod
@@ -62,13 +91,6 @@ class MapWriter:
 
 
 class MapFactory:
-    @staticmethod
-    def __create(surface: Dict[int, Dict[int, Map.Cell]]) -> Map:
-        Map._Map__can_create = True
-        map_instance: Map = Map(surface)
-        Map._Map__can_create = False
-
-        return map_instance
 
     @staticmethod
     def __parse_text_file_content(lines_list: List[str]) -> Dict[int, Dict[int, Map.Cell]]:
@@ -91,6 +113,18 @@ class MapFactory:
                 lines_list: List[str] = file.readlines()
                 surface: Dict[int, Dict[int, Map.Cell]] = MapFactory.__parse_text_file_content(lines_list)
 
-                return MapFactory.__create(surface)
+                return Map._Map__create(surface)
         except Exception as e:
             raise Exception(f'[error][{__class__}.{inspect.stack()[0].function}()] Failed to load map from file: {filename}. Reason: {e}')
+
+
+class MapBuilder:
+    def __init__(self):
+        self.__map_instance: Optional[Map] = None
+
+    def get(self) -> Map:
+        return self.__map_instance
+
+    def from_predicate(self, predicate: Callable[[int, int], Map.Cell], rows: int, columns: int) -> MapBuilder:
+        self.__map_instance = Map._Map__create(create_dictionary_matrix(predicate, rows, columns))
+        return self

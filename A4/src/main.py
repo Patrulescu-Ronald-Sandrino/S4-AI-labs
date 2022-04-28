@@ -1,12 +1,11 @@
 import os.path
-import sys
 from random import random, randint
-from typing import Set
+from typing import Any
 
-from src.domain.drone import Drone
-from src.domain.map import *
-from src.domain.problem_constants import *
-from src.service.solver import Solver, SolverTools
+from domain.drone import Drone
+from domain.map import *
+from domain.problem_constants import *
+from service.solver import Solver, SolverTools
 
 
 def get_map_creation_predicate() -> Callable[[int, int], Map.Cell]:
@@ -24,17 +23,26 @@ def get_map_creation_predicate() -> Callable[[int, int], Map.Cell]:
 
 def reallocate_drone(map_instance: Map, drone: Drone) -> None:
     try:
-        if map_instance.surface[drone.row][drone.column] != Map.Cell.EMPTY:
+        # if map_instance.surface[drone.row][drone.column] != Map.Cell.EMPTY:
+        if map_instance.value_at(drone.position) != Map.Cell.EMPTY:
             SolverTools.place_drone_on_empty_cell(map_instance, drone)
     except Exception as e:
         print(f'{e}')
         exit(1)
 
 
+def print_double_dictionary(double_dictionary: Dict[Any, Dict[Any, Any]]):
+    for key, value in double_dictionary.items():
+        print(f'{key}: {value}')
+
+
 def print_info(map_instance: Map, drone: Drone) -> None:
     print(map_instance)
-    for key, value in map_instance.compute_sensors_gains().items():
-        print(f'{key}: {value}')
+    print('SENSORS GAINS: ')
+    print_double_dictionary(map_instance.compute_sensors_gains())
+    print()
+    # for key, value in map_instance.compute_sensors_gains().items():
+    #     print(f'{key}: {value}')
     print(map_instance.to_texttable())
     print(f'ROWS: {map_instance.rows} COLUMNS: {map_instance.columns} TOTAL: {map_instance.rows * map_instance.columns}')
     #
@@ -42,13 +50,15 @@ def print_info(map_instance: Map, drone: Drone) -> None:
     print(f'WALLS {len(walls)}: {walls}')
     sensors = map_instance.find_cells(Map.Cell.SENSOR)  # is slow
     print(f'SENSORS {len(sensors)}: {sensors}')
-    print(f"Drone at: {drone.row}, {drone.column}")
-    print(map_instance.compute_minimum_distances_between_sensors())
+    print(f'Drone at: {drone.row}, {drone.column}\n')
+    print(f'MINIMUM DISTANCES BETWEEN SENSORS:')
+    print_double_dictionary(map_instance.compute_minimum_distances_between_sensors())
 
 
 def main():
     # input preparation
-    map_filename: str = os.path.join('data', 'map.txt')
+    # map_filename: str = os.path.join('data', 'map.txt')
+    map_filename: str = os.path.join('..', 'data', 'map.txt')
     map_instance: Map = MapFactory.from_text_file(map_filename)
     # map_instance: Map = MapBuilder().from_predicate(get_map_creation_predicate(),  MAP_ROWS, MAP_COLUMNS).get()
     # MapWriter.to_text_file(map_instance, os.path.join('data', 'map.txt'))

@@ -2,15 +2,13 @@ from __future__ import annotations
 
 import copy
 import inspect
-import sys
 from enum import IntEnum
 from queue import Queue
 from typing import Dict, List, Optional, Callable, Tuple, Set
 
 import texttable as texttable
 
-import tools.collections
-from tools.collections import create_dictionary_matrix
+from src.tools.collections import create_dictionary_matrix
 
 
 class Direction(IntEnum):
@@ -65,6 +63,10 @@ class Map:
     def surface(self) -> Dict[int, Dict[int, Map.Cell]]:
         return copy.deepcopy(self.__surface)
 
+    def value_at(self, position: Tuple[int, int]) -> Map.Cell:
+        row, column = position
+        return self.surface[row][column]
+
     def __str__(self) -> str:
         matrix_str: str = ""
 
@@ -97,6 +99,9 @@ class Map:
     def find_cells(self, cell: Map.Cell) -> List[Tuple[int, int]]:
         # return [(row, column) for row in self.surface.keys() for column in self.surface[row] if self.surface[row][column] == cell]
         return [(row, column) for row in range(self.rows) for column in range(self.columns) if self.surface[row][column] == cell]
+
+    def is_wall(self, row: int, column: int) -> bool:
+        return self.surface[row][column] == Map.Cell.WALL
 
     def is_not_wall(self, row: int, column: int) -> bool:
         return self.surface[row][column] != Map.Cell.WALL
@@ -146,11 +151,14 @@ class Map:
         distances[source] = 0
         queue.put(source)
 
+        # if source == destination:
+        #     return 0
+
         while queue.not_empty:
             current: Tuple[int, int] = queue.get()
 
             for neighbour in (Map.shift(current, direction) for direction in Direction):
-                if not self.is_in_map(*neighbour) or neighbour in visited:
+                if not self.is_in_map(*neighbour) or neighbour in visited or self.is_wall(*neighbour):
                     continue
 
                 visited.add(neighbour)
@@ -164,7 +172,7 @@ class Map:
 
     def compute_minimum_distances_between_sensors(self) -> Dict[Tuple[int, int], Dict[Tuple[int, int], float]]:
         sensors: List[Tuple[int, int]] = self.find_cells(Map.Cell.SENSOR)
-        return {sensor1: {sensor2: self.compute_minimum_distance(sensor1, sensor2) for sensor2 in sensors} for sensor1 in sensors}
+        return {sensor1: {sensor2: self.compute_minimum_distance(sensor1, sensor2) for sensor2 in sensors if sensor1 != sensor2} for sensor1 in sensors}
 
 
 class MapWriter:

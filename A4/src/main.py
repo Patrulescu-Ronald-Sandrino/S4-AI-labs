@@ -23,7 +23,6 @@ def get_map_creation_predicate() -> Callable[[int, int], Map.Cell]:
 
 def reallocate_drone(map_instance: Map, drone: Drone) -> None:
     try:
-        # if map_instance.surface[drone.row][drone.column] != Map.Cell.EMPTY:
         if map_instance.value_at(drone.position) != Map.Cell.EMPTY:
             SolverTools.place_drone_on_empty_cell(map_instance, drone)
     except Exception as e:

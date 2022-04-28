@@ -51,7 +51,6 @@ class Solver:
 class SolverTools:
     @staticmethod
     def place_drone_on_empty_cell(map_instance: Map, drone: Drone) -> None:
-        # if map_instance.surface[drone.row][drone.column] == Map.Cell.EMPTY:
         if map_instance.value_at(drone.position) == Map.Cell.EMPTY:
             raise Exception("Drone already on an empty cell!")
 

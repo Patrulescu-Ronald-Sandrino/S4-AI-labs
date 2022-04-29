@@ -4,6 +4,12 @@ from typing import Tuple
 
 
 def main():
+    a = [1, 2, 3]
+    b = a[:]
+    b[1] = 3
+    print(a)
+    print(b)
+    print(b[:-1])
     pass
     # int_enums()
     # tuple_args()

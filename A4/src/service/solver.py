@@ -1,10 +1,11 @@
 import time
 from random import randint
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict
 
 from src.domain.ant import Ant
 from src.domain.drone import Drone
 from src.domain.map import Map
+from src.domain.problem_constants import *
 
 
 class Solver:
@@ -12,13 +13,49 @@ class Solver:
         self.__map: Map = map_instance
         self.__drone: Drone = drone
 
-    def epoch(self, number_of_ants: int, number_of_iterations: int) -> Optional[Ant]:
-        raise NotImplementedError("TODO")
-        # TODO: move ants
+        self.__sensors: List[Tuple[int, int]] = []
+        self.__sensors_gains: Dict[Tuple[int, int], Dict[int, int]] = {}
+        self.__minimum_distances_between_sensors: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = {}
+        self.__pheromone_matrix: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = {}
 
-        # TODO: update pheromone matrix
+    def __prepare(self):
+        # TODO IDEA: use a dictionary with None values instead of a list for better performance
+        self.__sensors: List[Tuple[int, int]] = self.__map.find_cells(Map.Cell.SENSOR)
+        # TODO IDEA: pass the sensors list to the methods from below (for performance increase)
+        self.__sensors_gains: Dict[Tuple[int, int], Dict[int, int]] = self.__map.compute_sensors_gains()
+        self.__minimum_distances_between_sensors: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = self.__map.compute_minimum_distances_between_sensors()
+        # self.__pheromone_matrix: List[List[float]] = [[1.0 for _ in range(self.number_of_sensors)] for _ in range(self.number_of_sensors)]  # TODO: remove later
+        self.__pheromone_matrix: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = {row: {column: 1.0 for column in self.__sensors} for row in self.__sensors}
+
+    @property
+    def number_of_sensors(self) -> int:
+        return len(self.__sensors)
+
+    def epoch(self, number_of_ants: int, number_of_iterations: int) -> Optional[Ant]:
+        ants: List[Ant] = [Ant(self.number_of_sensors, self.__drone) for _ in range(number_of_ants)]
+
+        # move ants
+        for _ in range(self.number_of_sensors):
+            for ant in ants:
+                ant.move(self.__pheromone_matrix, self.__minimum_distances_between_sensors, Q0, ALPHA, BETA)  # <-- TODO
+
+        # simulate pheromone evaporation
+        for row in self.__sensors:
+            for column in self.__sensors:
+                self.__pheromone_matrix[row][column] *= (1 - RHO)
+
+        # update the trace with the pheromones left by the ants
+        pheromones_unit_quantities = [1.0 / ant.fitness for ant in ants]
+        for ant in ants:
+            ant_sensors = list(ant.path)
+            for index in range(len(ant_sensors) - 1):
+                current_sensor: Tuple[int, int] = ant_sensors[index]
+                next_sensor: Tuple[int, int] = ant_sensors[index + 1]
+
+                self.__pheromone_matrix[current_sensor][next_sensor] += pheromones_unit_quantities[index]
 
         # TODO: find best ant
+        raise NotImplementedError("TODO")
 
         # TODO: update pheromone matrix based on best ant
 
@@ -27,6 +64,7 @@ class Solver:
     def run(self, number_of_epochs: int, number_of_ants: int, number_of_iterations: int) -> Tuple[Optional[Ant], float]:
         best_ant: Optional[Ant] = None
 
+        self.__prepare()
         start_time: float = time.time()
         for epoch_number in range(1, number_of_epochs + 1):
             print(f'[epoch {epoch_number}/{number_of_epochs}] ' + '-' * 30)  # TODO END remove

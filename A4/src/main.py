@@ -40,6 +40,9 @@ def print_info(map_instance: Map, drone: Drone) -> None:
     print('SENSORS GAINS: ')
     print_double_dictionary(map_instance.compute_sensors_gains())
     print()
+    print('SENSORS GAINS at max level {MAX_SENSOR_CAPACITY}: ')
+    print_double_dictionary(map_instance.compute_sensors_gains(MAX_SENSOR_CAPACITY))
+    print()
     # for key, value in map_instance.compute_sensors_gains().items():
     #     print(f'{key}: {value}')
     print(map_instance.to_texttable())

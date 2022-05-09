@@ -84,12 +84,13 @@ class Map:
 
     def to_texttable(self, column_width: int = 3) -> str:
         table: texttable.Texttable = texttable.Texttable()
-
-        table.set_cols_align(['c' for _ in range(self.columns + 1)])
-        table.set_cols_width([column_width for _ in range(self.columns + 1)])
-        table.add_row([""] + [str(column_index) for column_index in range(self.columns)])
+        header: List[str] = [""] + [str(column_index) for column_index in range(self.columns)] + [""]
+        table.set_cols_align(['c' for _ in range(self.columns + 2)])
+        table.set_cols_width([column_width for _ in range(self.columns + 2)])
+        table.add_row(header)
         for row_index, row in self.surface.items():
-            table.add_row([row_index] + [int(cell) for cell in row.values()])
+            table.add_row([row_index] + [int(cell) for cell in row.values()] + [row_index])
+        table.add_row(header)
 
         return table.draw()
 

@@ -97,11 +97,7 @@ class Ant:
     def __trace_from_last_sensor(self, sensor: Tuple[int, int]) -> float:
         if len(self.path) == 0:
             return 1.0
-        print(self.path)
-        print(self.sensors)
-        print(sensor, id(sensor))
-        print(self.pheromone_matrix)
-        return self.__pheromone_matrix[self.__last_sensor][sensor]
+        return self.pheromone_matrix[self.__last_sensor][sensor]
 
     def __compute_sensor_probability(self, sensor: Tuple[int, int]) -> float:
         distance_from_last_sensor: float = self.distance_from_last_sensor(sensor)

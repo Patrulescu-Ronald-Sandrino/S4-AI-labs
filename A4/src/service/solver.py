@@ -32,10 +32,12 @@ class Solver:
         # TODO IDEA: pass the sensors list to the methods from below (for performance increase)
         self.__sensors_gains: Dict[Tuple[int, int], Dict[int, int]] = self.__map.compute_sensors_gains()
 
-        self.__minimum_distances_between_sensors: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = self.__map.compute_minimum_distances_between_sensors()
+        self.__minimum_distances_between_sensors: Dict[
+            Tuple[int, int], Dict[Tuple[int, int], float]] = self.__map.compute_minimum_distances_between_sensors()
         Ant.minimum_distances_between_sensors = self.__minimum_distances_between_sensors
 
-        self.__minimum_distances_between_start_and_senors = {sensor: self.__map.compute_minimum_distance(self.__drone.position, sensor) for sensor in self.__sensors}
+        self.__minimum_distances_between_start_and_senors = {
+            sensor: self.__map.compute_minimum_distance(self.__drone.position, sensor) for sensor in self.__sensors}
         Ant.minimum_distances_between_start_and_senors = self.__minimum_distances_between_start_and_senors
 
     @property
@@ -56,7 +58,8 @@ class Solver:
                 self.__pheromone_matrix[row][column] *= (1 - RHO)
 
         # update the trace with the pheromones left by the ants
-        pheromones_unit_quantities = [1.0 / ant.fitness for ant in ants if ant.fitness != 0] # TODO: deal with ant.fitness = 0 properly
+        pheromones_unit_quantities = [1.0 / ant.fitness for ant in ants if
+                                      ant.fitness != 0]  # TODO: deal with ant.fitness = 0 properly
         for ant in ants:
             ant_sensors = list(ant.path)
             for index in range(len(ant_sensors) - 1):
@@ -65,14 +68,7 @@ class Solver:
 
                 self.__pheromone_matrix[current_sensor][next_sensor] += pheromones_unit_quantities[index]
 
-        # TODO: find best ant
-        raise NotImplementedError("TODO")
-
-        # TODO: update pheromone matrix based on best ant
-        raise NotImplementedError("TODO")
-
-        # TODO: return best ant
-        raise NotImplementedError("TODO")
+        return max(ants, key=lambda a: a.fitness)
 
     def run(self, number_of_epochs: int, number_of_ants: int, number_of_iterations: int) -> Tuple[Optional[Ant], float]:
         best_ant: Optional[Ant] = None
@@ -80,20 +76,21 @@ class Solver:
         self.__prepare()
         start_time: float = time.time()
         for epoch_number in range(1, number_of_epochs + 1):
-            print(f'[epoch {epoch_number}/{number_of_epochs}] ' + '-' * 30)  # TODO END remove
+            print(f'[epoch {epoch_number}/{number_of_epochs}] START ' + '-' * 30)  # TODO END remove
 
             epoch_best_ant = self.epoch(number_of_ants, number_of_iterations)
             best_ant = Ant.get_best(best_ant, epoch_best_ant)
 
             if best_ant is not None:  # TODO END remove
-                if id(best_ant) != id(epoch_best_ant):
+                if best_ant.path != epoch_best_ant.path or id(best_ant) != id(epoch_best_ant):
                     print(f'RAISED to fitness: {best_ant.fitness} path: {best_ant.path}')
                 else:
-                    print(f'Not changed')
+                    print(f'fitness: {best_ant.fitness} path: {best_ant.path}')
             else:
                 print(f'best_ant: None')
 
-            print(f'[epoch {epoch_number}/{number_of_epochs}] ' + '-' * 30)  # TODO END remove
+            print(f'[epoch {epoch_number}/{number_of_epochs}] END ' + '-' * 30)  # TODO END remove
+            print()
         end_time: float = time.time()
 
         return best_ant, end_time - start_time

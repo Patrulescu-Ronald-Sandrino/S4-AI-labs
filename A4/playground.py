@@ -11,7 +11,13 @@ def main():
     # tuple_args()
     # ranges()
     # max_values()
-    get_random_key_from_dictionary()
+    # get_random_key_from_dictionary()
+    # compare_dictionaries()
+
+
+def compare_dictionaries():
+    print({1: 5, 2: 3} == {1: 5, 2: 1+2})
+    print({1: 5, 2: 3} == {2: 3, 1: 5})
 
 
 def slicing():

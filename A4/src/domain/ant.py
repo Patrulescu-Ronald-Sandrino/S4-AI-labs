@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import copy
 import random
 from typing import Optional, Tuple, Dict, List, Callable, Set
 
 from src.domain.drone import Drone
 from src.domain.problem_constants import *
-from src.tools.collections import last_key
+from src.tools.collections import last_key, last_value
 from src.tools.constants import INFINITY
 
 
@@ -55,6 +56,12 @@ class Ant:
         self.__start: Tuple[int, int] = drone.position
         self.__battery: int = drone.energy
 
+        self.__coverage: int = -1
+
+    @property
+    def coverage(self) -> int:
+        return self.__coverage
+
     @property
     def path(self) -> Dict[Tuple[int, int]]:
         return self.__path
@@ -62,6 +69,10 @@ class Ant:
     @property
     def fitness(self) -> int:
         return self.__fitness
+
+    @property
+    def battery(self) -> int:
+        return self.__battery
 
     @property
     def __last_sensor(self) -> Tuple[int, int]:
@@ -161,14 +172,44 @@ class Ant:
         return cdf
 
     @staticmethod
+    def add_energy_levels(ant: Ant, sensors_gains: Dict[Tuple[int, int], Dict[int, int]]) -> Ant:
+        new_ant: Ant = copy.deepcopy(ant)
+
+        new_ant.__coverage = 0
+        for sensor in new_ant.__path:
+            new_ant.__path[sensor] = 0
+
+        if new_ant.__battery <= 0:
+            return new_ant
+
+        sensors_sorted_by_gain = sorted(new_ant.__path.keys(),
+                                        key=lambda s: last_value(sensors_gains[s]) / last_key(sensors_gains[s]))
+
+        for sensor in sensors_sorted_by_gain:
+            if new_ant.battery <= 0:
+                break
+
+            sensor_max_energy = last_key(sensors_gains[sensor])
+            if new_ant.__battery > sensor_max_energy:
+                new_ant.__path[sensor] = sensor_max_energy
+                new_ant.__battery -= sensor_max_energy
+            else:
+                new_ant.__path[sensor] = new_ant.__battery
+                new_ant.__battery -= 0
+
+            new_ant.__coverage += last_value(sensors_gains[sensor])
+
+        return new_ant
+
+    @staticmethod
     def get_best(first: Optional[Ant], second: Optional[Ant]) -> Optional[Ant]:
         if first is None:
             return second
         if second is None:
             return first
-        if first.fitness > second.fitness:
+        if len(first.path) > len(second.path):  # TODO: IDEA: compare them on -coverage- instead
             return first
         elif first.fitness == second.fitness:
-            return first if len(first.path) < len(second.path) else second
+            return first if first.fitness < second.fitness else second
         else:
             return second

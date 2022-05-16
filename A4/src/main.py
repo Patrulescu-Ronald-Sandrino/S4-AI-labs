@@ -81,7 +81,12 @@ def main():
     if best_ant is None:
         print(f'best ant -> None')
     else:
-        print(f'best ant -> fitness: {best_ant.fitness} path: {best_ant.path}')
+        # print(f'best ant -> fitness: {best_ant.fitness} coverage: {best_ant.coverage} path: {best_ant.path}')
+        print(f'best ant')
+        print(f'fitness: {best_ant.fitness}')
+        print(f'coverage: {best_ant.coverage}')
+        print(f'battery left: {best_ant.battery}')
+        print(f'path: {best_ant.path}')
 
 
 if __name__ == '__main__':

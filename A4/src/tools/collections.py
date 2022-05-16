@@ -23,3 +23,7 @@ def last_key(dict_: Dict[T, Any]) -> T:
     source: https://stackoverflow.com/questions/16125229/last-key-in-python-dictionary
     """
     return list(dict_)[-1]
+
+
+def last_value(dict_: Dict[Any, T]) -> T:
+    return list(dict_.values())[-1]

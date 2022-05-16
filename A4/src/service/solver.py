@@ -30,7 +30,7 @@ class Solver:
         Ant.pheromone_matrix = self.__pheromone_matrix
 
         # TODO IDEA: pass the sensors list to the methods from below (for performance increase)
-        self.__sensors_gains: Dict[Tuple[int, int], Dict[int, int]] = self.__map.compute_sensors_gains()
+        self.__sensors_gains: Dict[Tuple[int, int], Dict[int, int]] = self.__map.compute_sensors_gains(MAX_SENSOR_CAPACITY)
 
         self.__minimum_distances_between_sensors: Dict[
             Tuple[int, int], Dict[Tuple[int, int], float]] = self.__map.compute_minimum_distances_between_sensors()
@@ -93,7 +93,7 @@ class Solver:
             print()
         end_time: float = time.time()
 
-        return best_ant, end_time - start_time
+        return Ant.add_energy_levels(best_ant, self.__sensors_gains), end_time - start_time
 
 
 class SolverTools:

@@ -17,15 +17,26 @@ class Solver:
         self.__sensors_gains: Dict[Tuple[int, int], Dict[int, int]] = {}
         self.__minimum_distances_between_sensors: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = {}
         self.__pheromone_matrix: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = {}
+        self.__minimum_distances_between_start_and_senors: Dict[Tuple[int, int], float] = {}
 
     def __prepare(self):
         # TODO IDEA: use a dictionary with None values instead of a list for better performance
         self.__sensors: List[Tuple[int, int]] = self.__map.find_cells(Map.Cell.SENSOR)
+        Ant.sensors = self.__sensors
+
+        # self.__pheromone_matrix: List[List[float]] = [[1.0 for _ in range(self.number_of_sensors)] for _ in range(self.number_of_sensors)]  # TODO: remove later
+        self.__pheromone_matrix: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = {
+            row: {column: 1.0 for column in self.__sensors} for row in self.__sensors}
+        Ant.pheromone_matrix = self.__pheromone_matrix
+
         # TODO IDEA: pass the sensors list to the methods from below (for performance increase)
         self.__sensors_gains: Dict[Tuple[int, int], Dict[int, int]] = self.__map.compute_sensors_gains()
+
         self.__minimum_distances_between_sensors: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = self.__map.compute_minimum_distances_between_sensors()
-        # self.__pheromone_matrix: List[List[float]] = [[1.0 for _ in range(self.number_of_sensors)] for _ in range(self.number_of_sensors)]  # TODO: remove later
-        self.__pheromone_matrix: Dict[Tuple[int, int], Dict[Tuple[int, int], float]] = {row: {column: 1.0 for column in self.__sensors} for row in self.__sensors}
+        Ant.minimum_distances_between_sensors = self.__minimum_distances_between_sensors
+
+        self.__minimum_distances_between_start_and_senors = {sensor: self.__map.compute_minimum_distance(self.__drone.position, sensor) for sensor in self.__sensors}
+        Ant.minimum_distances_between_start_and_senors = self.__minimum_distances_between_start_and_senors
 
     @property
     def number_of_sensors(self) -> int:
@@ -37,7 +48,7 @@ class Solver:
         # move ants
         for _ in range(self.number_of_sensors):
             for ant in ants:
-                ant.move(self.__pheromone_matrix, self.__minimum_distances_between_sensors, Q0, ALPHA, BETA)  # <-- TODO
+                ant.move()
 
         # simulate pheromone evaporation
         for row in self.__sensors:
@@ -45,7 +56,7 @@ class Solver:
                 self.__pheromone_matrix[row][column] *= (1 - RHO)
 
         # update the trace with the pheromones left by the ants
-        pheromones_unit_quantities = [1.0 / ant.fitness for ant in ants]
+        pheromones_unit_quantities = [1.0 / ant.fitness for ant in ants if ant.fitness != 0] # TODO: deal with ant.fitness = 0 properly
         for ant in ants:
             ant_sensors = list(ant.path)
             for index in range(len(ant_sensors) - 1):
@@ -58,8 +69,10 @@ class Solver:
         raise NotImplementedError("TODO")
 
         # TODO: update pheromone matrix based on best ant
+        raise NotImplementedError("TODO")
 
         # TODO: return best ant
+        raise NotImplementedError("TODO")
 
     def run(self, number_of_epochs: int, number_of_ants: int, number_of_iterations: int) -> Tuple[Optional[Ant], float]:
         best_ant: Optional[Ant] = None

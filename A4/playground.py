@@ -1,20 +1,33 @@
+import random
 import sys
 from enum import IntEnum
 from typing import Tuple
 
 
 def main():
+    pass
+    # slicing()
+    # int_enums()
+    # tuple_args()
+    # ranges()
+    # max_values()
+    get_random_key_from_dictionary()
+
+
+def slicing():
     a = [1, 2, 3]
     b = a[:]
     b[1] = 3
     print(a)
     print(b)
     print(b[:-1])
-    pass
-    # int_enums()
-    # tuple_args()
-    # ranges()
-    max_values()
+
+
+def get_random_key_from_dictionary():
+    print(random.choice(list({1: 2, 3: 5, 5: 6}.keys())))
+    print(random.choice(list({1: 2, 3: 5, 5: 6}.keys())))
+    print(random.choice(list({1: 2, 3: 5, 5: 6}.keys())))
+    return
 
 
 def max_values():

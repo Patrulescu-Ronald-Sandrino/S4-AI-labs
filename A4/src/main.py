@@ -6,6 +6,7 @@ from domain.drone import Drone
 from domain.map import *
 from domain.problem_constants import *
 from service.solver import Solver, SolverTools
+from src.tools.collections import last_key
 
 
 def get_map_creation_predicate() -> Callable[[int, int], Map.Cell]:
@@ -55,6 +56,8 @@ def print_info(map_instance: Map, drone: Drone) -> None:
     print(f'Drone at: {drone.row}, {drone.column}\n')
     print(f'MINIMUM DISTANCES BETWEEN SENSORS:')
     print_double_dictionary(map_instance.compute_minimum_distances_between_sensors())
+    print(f'MINIMUM DISTANCES BETWEEN START AND SENSORS:')
+    print({sensor: map_instance.compute_minimum_distance(drone.position, sensor) for sensor in sensors})
 
 
 def main():
@@ -68,7 +71,7 @@ def main():
     reallocate_drone(map_instance, drone)  # reallocate the drone on an empty position, if necessary
 
     # info print
-    print_info(map_instance, drone)
+    # print_info(map_instance, drone)
 
     # run the algorithm
     best_ant, duration = Solver(map_instance, drone).run(NUMBER_OF_EPOCHS, NUMBER_OF_ANTS, NUMBER_OF_ITERATIONS)

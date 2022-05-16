@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Callable, Tuple, Set
 import texttable as texttable
 
 from src.tools.collections import create_dictionary_matrix
+from src.tools.constants import INFINITY
 
 
 class Direction(IntEnum):
@@ -145,7 +146,7 @@ class Map:
         # E = rows * (columns - 1) + (rows - 1) * columns = V^2 - rows - columns
         queue: Queue = Queue()
         visited: Set[Tuple[int, int]] = set()
-        distances: Dict[Tuple[int, int], float] = {(row, column): float('inf') for row in range(self.rows) for column in range(self.columns)}
+        distances: Dict[Tuple[int, int], float] = {(row, column): INFINITY for row in range(self.rows) for column in range(self.columns)}
 
         visited.add(source)
         distances[source] = 0
@@ -168,7 +169,7 @@ class Map:
                 if neighbour == destination:
                     return distances[neighbour]
 
-        return float('inf')
+        return INFINITY
 
     def compute_minimum_distances_between_sensors(self) -> Dict[Tuple[int, int], Dict[Tuple[int, int], float]]:
         sensors: List[Tuple[int, int]] = self.find_cells(Map.Cell.SENSOR)

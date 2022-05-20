@@ -20,3 +20,12 @@ class Point:
     def xy(self) -> Tuple[float, float]:
         return self.x, self.y
 
+
+class LabeledPoint(Point):
+    def __init__(self, x: float, y: float, label: str):
+        super().__init__(x, y)
+        self.__label: str = label
+
+    @property
+    def label(self) -> str:
+        return self.__label

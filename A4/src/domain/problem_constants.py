@@ -11,7 +11,7 @@ MAX_SENSOR_CAPACITY: int = 5
 
 DRONE_POSITION: Tuple[int, int] = 7, 12
 # DRONE_ENERGY: int = 100
-DRONE_ENERGY: int = 200
+DRONE_ENERGY: int = 300
 
 
 # NUMBER_OF_EPOCHS: int = 25

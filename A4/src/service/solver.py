@@ -68,7 +68,8 @@ class Solver:
 
                 self.__pheromone_matrix[current_sensor][next_sensor] += pheromones_unit_quantities[index]
 
-        return max(ants, key=lambda a: a.fitness)
+        # return max(ants, key=lambda a: a.fitness)
+        return min(ants, key=lambda a: a.fitness)
 
     def run(self, number_of_epochs: int, number_of_ants: int, number_of_iterations: int) -> Tuple[Optional[Ant], float]:
         best_ant: Optional[Ant] = None
@@ -81,13 +82,13 @@ class Solver:
             epoch_best_ant = self.epoch(number_of_ants, number_of_iterations)
             best_ant = Ant.get_best(best_ant, epoch_best_ant)
 
-            if best_ant is not None:  # TODO END remove
-                if best_ant.path != epoch_best_ant.path or id(best_ant) != id(epoch_best_ant):
-                    print(f'RAISED to fitness: {best_ant.fitness} path: {best_ant.path}')
-                else:
-                    print(f'fitness: {best_ant.fitness} path: {best_ant.path}')
-            else:
-                print(f'best_ant: None')
+            # if best_ant is not None:  # TODO END remove
+            #     if best_ant.path != epoch_best_ant.path or id(best_ant) != id(epoch_best_ant):
+            #         print(f'RAISED to fitness: {best_ant.fitness} path: {best_ant.path}')
+            #     else:
+            #         print(f'fitness: {best_ant.fitness} path: {best_ant.path}')
+            # else:
+            #     print(f'best_ant: None')
 
             print(f'[epoch {epoch_number}/{number_of_epochs}] END ' + '-' * 30)  # TODO END remove
             print()

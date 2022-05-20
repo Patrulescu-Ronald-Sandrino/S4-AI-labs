@@ -209,7 +209,7 @@ class Ant:
             return first
         if len(first.path) > len(second.path):  # TODO: IDEA: compare them on -coverage- instead
             return first
-        elif first.fitness == second.fitness:
+        elif len(first.path) == len(second.path):
             return first if first.fitness < second.fitness else second
         else:
             return second

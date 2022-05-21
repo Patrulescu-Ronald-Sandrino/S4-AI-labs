@@ -22,7 +22,7 @@ def KMeans(x, k, no_of_iterations):
         centroids = []
         for cid in range(k):
             # updating centroids by taking mean of cluster it belongs to
-            temp_cent =
+            temp_cent = -1  # TODO
             centroids.append(temp_cent)
 
         # updated centroids
@@ -37,6 +37,7 @@ def readPoints():
     with open('dataset.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
+            pass
             # Complete appending point (row1, row2) to points list
     return points
 

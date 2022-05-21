@@ -24,7 +24,7 @@ class Solver:
 
         for _ in range(Solver.ITERATIONS):
             print(f'running iteration {_}')
-            self.any_centroid_changed: bool = False
+            self.any_centroid_changed = False
             self.__run_iteration()
             if not self.any_centroid_changed:
                 break
@@ -105,6 +105,3 @@ class Solver:
 
     def __initialize_centroids(self, x_bounds: Tuple[float, float], y_bounds: Tuple[float, float]):
         self.centroids = {Centroid(uniform(*x_bounds), uniform(*y_bounds)) for _ in range(Solver.CLUSTERS)}
-
-    # LEVEL 4
-

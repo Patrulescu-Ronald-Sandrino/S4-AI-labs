@@ -1,7 +1,5 @@
 from typing import Set, Tuple
 
-from domain.mean import Mean
-
 
 class Centroid:
     def __init__(self, x: float, y: float):

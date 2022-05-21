@@ -23,6 +23,7 @@ class Solver:
         self.__prepare()
 
         for _ in range(Solver.ITERATIONS):
+            print(f'running iteration {_}')
             self.any_centroid_changed: bool = False
             self.__run_iteration()
             if not self.any_centroid_changed:
@@ -30,10 +31,14 @@ class Solver:
             self.display()
 
         # TODO: statistics and plotting
+        self.print_info()
+
+    def print_info(self):
         for centroid in self.centroids:
-            print(centroid.xy)
-            print(centroid.points_indices)
-            print(centroid.mean.x, centroid.mean.y)
+            print()
+            print(f'centroid {round(centroid.x, 4)} {round(centroid.y, 4)}')
+            print(f'len(points_indices) {len(centroid.points_indices)}')
+            print(f'points_indices {centroid.points_indices}')
 
     # LEVEL 2
 
@@ -43,7 +48,7 @@ class Solver:
         self.__initialize_centroids(x_bounds, y_bounds)
         self.any_centroid_changed = True
 
-    def __run_iteration(self):
+    def __run_iteration(self):  # https://www.geeksforgeeks.org/k-means-clustering-introduction/
         for index, point in enumerate(self.points):
 
             centroid: Centroid = point.centroid
@@ -58,7 +63,7 @@ class Solver:
                 point.centroid = new_centroid
 
     def display(self):
-        colours = ['red', 'green', 'blue', 'purple']
+        colours = ['red', 'green', 'blue', 'yellow']
         index = 0
         for centroid in self.centroids:
             plt.scatter(

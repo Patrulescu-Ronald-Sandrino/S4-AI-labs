@@ -23,3 +23,14 @@ class Centroid:
         self.x = (self.x * (length - 1) + x) / length
         self.y = (self.y * (length - 1) + y) / length
 
+    def __str__(self) -> str:
+        result: str = f'Centroid:\n'
+
+        # result += f'id: {id(self)}\n'
+        # result += f'id: {hex(id(self))}\n'
+        result += f'mean: {round(self.x, 4)} {round(self.y, 4)}\n'
+        result += f'len(points_indices): {len(self.points_indices)}\n'
+        result += f'points_indices: {self.points_indices}\n'
+        
+        return result
+

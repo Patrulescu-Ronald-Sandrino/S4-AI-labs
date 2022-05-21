@@ -1,7 +1,6 @@
 from typing import Optional, Tuple, Set
 
 from domain.centroid import Centroid
-from tools.math import euclidean_distance
 
 
 class Point:
@@ -16,4 +15,8 @@ class Point:
         return self.x, self.y
 
     def classify(self, centroids: Set[Centroid]) -> Centroid:
-        return min(centroids, key=lambda centroid: euclidean_distance(self.xy, centroid.xy))
+        return min(centroids, key=lambda centroid: self.euclidean_distance(centroid.xy))
+
+    def euclidean_distance(self, other_coordinates: Tuple[float, float]) -> float:
+        other_x, other_y = other_coordinates
+        return ((self.x - other_x) ** 2 + (self.y - other_y) ** 2) ** 1/2

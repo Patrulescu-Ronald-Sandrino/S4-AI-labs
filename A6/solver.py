@@ -1,17 +1,20 @@
 import csv
 import sys
 from random import uniform
-from typing import List, Tuple, Set
+from typing import List, Tuple, Set, Dict
 
 from matplotlib import pyplot as plt
 
 from domain.centroid import Centroid
 from domain.point import Point
+from statistics_calculator import StatisticsCalculator
+from statistics_printer import StatisticsPrinter
 
 
 class Solver:
     CLUSTERS = 4
     ITERATIONS = 1000
+    LABELS: Dict[str, None] = {label: None for label in ['A', 'B', 'C', 'D']}
 
     def __init__(self, filename: str):
         self.filename: str = filename
@@ -28,17 +31,10 @@ class Solver:
             self.__run_iteration()
             if not self.any_centroid_changed:
                 break
-            self.display()
+            self.__display_plot()
 
-        # TODO: statistics and plotting
-        self.print_info()
-
-    def print_info(self):
-        for centroid in self.centroids:
-            print()
-            print(f'centroid {round(centroid.x, 4)} {round(centroid.y, 4)}')
-            print(f'len(points_indices) {len(centroid.points_indices)}')
-            print(f'points_indices {centroid.points_indices}')
+        self.__print_centroids_info()
+        self.__compute_and_print_statistics()
 
     # LEVEL 2
 
@@ -62,16 +58,14 @@ class Solver:
                 self.any_centroid_changed = True
                 point.centroid = new_centroid
 
-    def display(self):
-        colours = ['red', 'green', 'blue', 'yellow']
-        index = 0
-        for centroid in self.centroids:
+    def __display_plot(self):
+        colours = {'red', 'green', 'blue', 'yellow'}
+        for centroid, color in zip(self.centroids, colours):
             plt.scatter(
                 [self.points[point_index].x for point_index in centroid.points_indices],
                 [self.points[point_index].y for point_index in centroid.points_indices],
-                c=colours[index]
+                c=color
             )
-            index += 1
 
         plt.scatter(
             [centroid.x for centroid in self.centroids],
@@ -80,15 +74,21 @@ class Solver:
         )
         plt.show()
 
+    def __print_centroids_info(self):
+        for centroid in self.centroids:
+            print(centroid)
+
+    def __compute_and_print_statistics(self):
+        results = StatisticsCalculator(Solver.LABELS, self.points, self.centroids).run()
+        StatisticsPrinter(Solver.LABELS, self.centroids, *results).print()
+
     # LEVEL 3
 
     def __read_points(self):
         with open(self.filename, 'r') as file:
             rows: List[str] = list(csv.reader(file))[1:]  # skip the 1st line (header line)
-
-            # row[0] = label
-            # row[1] = x
-            # row[2] = y
+            # indices:     0      1    2
+            # line:     <label>, <x>, <y>
             self.points = [Point(row[1], row[2], row[0]) for row in rows]
 
     def __find_domain_bounds(self) -> Tuple[Tuple[float, float], Tuple[float, float]]:
@@ -105,3 +105,5 @@ class Solver:
 
     def __initialize_centroids(self, x_bounds: Tuple[float, float], y_bounds: Tuple[float, float]):
         self.centroids = {Centroid(uniform(*x_bounds), uniform(*y_bounds)) for _ in range(Solver.CLUSTERS)}
+
+    # LEVEL 4

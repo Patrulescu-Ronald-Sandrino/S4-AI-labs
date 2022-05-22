@@ -83,8 +83,9 @@ class Solver:
             print(centroid)
 
     def __compute_and_print_statistics(self):
-        results = StatisticsCalculator(Solver.LABELS, self.points, self.centroids).run()
-        StatisticsPrinter(Solver.LABELS, self.centroids, *results).print()
+        statistics_calculator = StatisticsCalculator(Solver.LABELS, self.points, self.centroids)
+        StatisticsPrinter(Solver.LABELS, self.centroids, *statistics_calculator.run()).print()
+        statistics_calculator.print_overall_statistics()
 
     # LEVEL 3
 

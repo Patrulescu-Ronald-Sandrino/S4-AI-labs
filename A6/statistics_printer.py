@@ -3,6 +3,7 @@ from typing import Set, Dict, Optional, List
 import texttable
 
 from domain.centroid import Centroid
+from domain.point import Point
 
 
 class StatisticsPrinter:
@@ -24,7 +25,7 @@ class StatisticsPrinter:
         print()
         print(self.__get_labels_texttable().draw())
         print()
-        print(self.__get_statistics_texttable().draw())
+        # print(self.__get_statistics_texttable().draw())
         print()
 
     # LEVEL 2

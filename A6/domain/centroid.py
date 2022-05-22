@@ -34,3 +34,5 @@ class Centroid:
         
         return result
 
+    # def __lt__(self, other):
+    #     return self.x <= other.x or self.y <= other.y

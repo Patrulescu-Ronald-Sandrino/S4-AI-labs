@@ -21,10 +21,11 @@ class StatisticsPrinter:
 
     def print(self):
         print(self.__get_occurrences_texttable().draw())
-
+        print()
         print(self.__get_labels_texttable().draw())
-        
+        print()
         print(self.__get_statistics_texttable().draw())
+        print()
 
     # LEVEL 2
 
@@ -39,11 +40,15 @@ class StatisticsPrinter:
         return table
     
     def __get_labels_texttable(self) -> texttable.Texttable:
-        # TODO
-        # print(f'clusters labels:',
-        #       {label: f'({round(centroid.x, 4)}, {round(centroid.y, 4)}) id={hex(id(centroid))}' for label, centroid in
-        #        labels_to_centroids.items()})
-        return texttable.Texttable()
+        table: texttable.Texttable = texttable.Texttable()
+
+        table.set_cols_align(['c' for _ in range(len(self.__centroids) + 1)])
+        table.set_cols_width([18 for _ in range(len(self.__centroids) + 1)])
+        self.__add_centroid_headers_rows(table, self.__centroids)
+        centroids_to_labels: Dict[Optional[Centroid], str] = {centroid: label for label, centroid in self.__labels_to_centroids.items()}
+        table.add_row(['label'] + [centroids_to_labels[centroid] for centroid in self.__centroids])
+
+        return table
 
     def __get_statistics_texttable(self) -> texttable.Texttable:
         table: texttable.Texttable = texttable.Texttable()

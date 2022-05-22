@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import csv
 import sys
 from random import uniform
@@ -26,7 +28,7 @@ class Solver:
         self.__prepare()
 
         for _ in range(Solver.ITERATIONS):
-            print(f'running iteration {_}')
+            print(f'running iteration {_ + 1}')
             self.any_centroid_changed = False
             self.__run_iteration()
             if not self.any_centroid_changed:
@@ -49,7 +51,7 @@ class Solver:
 
             centroid: Centroid = point.centroid
             new_centroid: Centroid = point.classify(self.centroids)
-            
+
             if centroid is not None and new_centroid != centroid:
                 centroid.remove_point(index, *point.xy)
             new_centroid.add_point(index, *point.xy)
@@ -59,8 +61,10 @@ class Solver:
                 point.centroid = new_centroid
 
     def __display_plot(self):
-        colours = {'red', 'green', 'blue', 'yellow'}
-        for centroid, color in zip(self.centroids, colours):
+        # colours = {'red', 'green', 'blue', 'yellow'}  # have a random colors order
+        colours: Dict[str] = {color: None for color in ['red', 'green', 'blue', 'yellow']}  # have a fixed colors order
+        # https://stackoverflow.com/questions/4233476/sort-a-list-by-multiple-attributes
+        for centroid, color in zip(sorted(list(self.centroids), key=lambda c: (c.x, c.y)), colours):
             plt.scatter(
                 [self.points[point_index].x for point_index in centroid.points_indices],
                 [self.points[point_index].y for point_index in centroid.points_indices],
@@ -104,6 +108,13 @@ class Solver:
         return (x_min, x_max), (y_min, y_max)
 
     def __initialize_centroids(self, x_bounds: Tuple[float, float], y_bounds: Tuple[float, float]):
-        self.centroids = {Centroid(uniform(*x_bounds), uniform(*y_bounds)) for _ in range(Solver.CLUSTERS)}
+        # https://stackoverflow.com/questions/54747253/how-to-annotate-function-that-takes-a-tuple-of-variable-length-variadic-tuple
+        def scale_tuple(t: Tuple[float | int, ...], factor: float | int):
+            return tuple(factor * x for x in t)
+        scaling_factor = 5 / 6
+        self.centroids = {
+            Centroid(uniform(*scale_tuple(x_bounds, scaling_factor)), uniform(*scale_tuple(y_bounds, scaling_factor)))
+            for _ in range(Solver.CLUSTERS)}
+        # self.centroids = {Centroid(uniform(*x_bounds), uniform(*y_bounds)) for _ in range(Solver.CLUSTERS)}  # no scaling variant
 
     # LEVEL 4
